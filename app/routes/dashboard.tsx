@@ -71,7 +71,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     // dummy timeout to simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // Uncomment the following line to use dummy data instead of real API calls
+    // // Uncomment the following line to use dummy data instead of real API calls
     return json({ painPoints: getDummyPainPoints() });
 
     const headers = new Headers();
