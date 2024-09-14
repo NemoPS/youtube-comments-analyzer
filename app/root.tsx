@@ -56,14 +56,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 function Document({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="mytheme">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-base-100 text-base-content">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -92,8 +92,10 @@ export default function App() {
 
   return (
     <Document>
-      <Nav env={env} user={user} profile={profile} avatarUrl={avatarUrl} />
-      <Outlet />
+      <div data-theme="mytheme">
+        <Nav env={env} user={user} profile={profile} avatarUrl={avatarUrl} />
+        <Outlet />
+      </div>
     </Document>
   );
 }

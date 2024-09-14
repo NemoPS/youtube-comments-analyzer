@@ -4,6 +4,15 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        primary: "#3B82F6",    // Bright blue
+        secondary: "#6B7280",  // Cool gray
+        accent: "#10B981",     // Emerald green
+        neutral: "#1F2937",    // Dark blue-gray
+        "base-100": "#111827", // Very dark blue-gray (background)
+        "base-200": "#1E293B", // Slightly lighter dark blue-gray
+        "base-300": "#374151", // Even lighter dark blue-gray
+      },
       keyframes: {
         'fade-in-scale': {
           '0%': { opacity: '0', transform: 'scale(0.95)' },
@@ -20,4 +29,23 @@ module.exports = {
     },
   },
   plugins: [require("daisyui")],
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          "primary": "#3B82F6",
+          "secondary": "#6B7280",
+          "accent": "#10B981",
+          "neutral": "#1F2937",
+          "base-100": "#111827",
+          "base-200": "#1E293B",
+          "base-300": "#374151",
+          "info": "#3ABFF8",
+          "success": "#36D399",
+          "warning": "#FBBD23",
+          "error": "#F87272",
+        },
+      },
+    ],
+  },
 };
