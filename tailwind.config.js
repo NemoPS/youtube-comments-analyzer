@@ -5,13 +5,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#3B82F6",    // Bright blue
+        primary: "#0EA5E9",    // sky-500
+        "primary-hover": "#38BDF8",    // sky-400 (lighter)
         secondary: "#6B7280",  // Cool gray
         accent: "#10B981",     // Emerald green
         neutral: "#1F2937",    // Dark blue-gray
         "base-100": "#111827", // Very dark blue-gray (background)
         "base-200": "#1E293B", // Slightly lighter dark blue-gray
         "base-300": "#374151", // Even lighter dark blue-gray
+      },
+      boxShadow: {
+        'top-light': '0 1px 0 0 rgba(255, 255, 255, 0.1) inset',
+      },
+      backgroundImage: {
+        'button-top-light': 'linear-gradient(rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 5%)',
       },
       keyframes: {
         'fade-in-scale': {
@@ -33,7 +40,9 @@ module.exports = {
     themes: [
       {
         mytheme: {
-          "primary": "#3B82F6",
+          "primary": "#0EA5E9",  // sky-500
+          "primary-focus": "#38BDF8",  // sky-400 (lighter)
+          "primary-content": "#FFFFFF",  // White text for primary buttons
           "secondary": "#6B7280",
           "accent": "#10B981",
           "neutral": "#1F2937",

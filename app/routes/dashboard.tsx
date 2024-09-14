@@ -6,6 +6,8 @@ import { sb } from "~/api/sb";
 import { DummySearchCard } from "~/components/DummySearchCard";
 import { PreviousSearchCard } from "~/components/PreviousSearchCard";
 import { SearchDetails } from "~/components/SearchDetails";
+import { loadComments } from "~/utils/ytfetch";
+import { getFromGPT } from "~/utils/gpt";
 
 type User = {
     id: string;
@@ -95,23 +97,24 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
 
     // dummy timeout to simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // Use dummy data instead of real API calls
-    return json({
-        painPoints: getDummyPainPoints(),
-        videoTitle: "Dummy Video Title",
-        videoUrl: formData.get("youtubeUrl") as string,
-        thumbnailUrl: "https://via.placeholder.com/320x180.png?text=Dummy+Thumbnail"
-    });
+    // // Use dummy data instead of real API calls
+    // return json({
+    //     painPoints: getDummyPainPoints(),
+    //     videoTitle: "Dummy Video Title",
+    //     videoUrl: formData.get("youtubeUrl") as string,
+    //     thumbnailUrl: "https://via.placeholder.com/320x180.png?text=Dummy+Thumbnail"
+    // });
 
     // Comment out the real API call code
-    /*
+
     const headers = new Headers();
     const supabase = sb(request, headers);
 
     const { data } = await supabase.auth.getUser();
     const user = data.user as User | null;
+    const youtubeUrl = formData.get("youtubeUrl") as string;
 
     if (!user) {
         return json({ error: "User not authenticated" }, { status: 401 });
@@ -146,7 +149,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         console.error("Error processing YouTube data:", error);
         return json({ error: "Failed to process YouTube data" }, { status: 500 });
     }
-    */
+
 };
 
 export default function Dashboard() {
