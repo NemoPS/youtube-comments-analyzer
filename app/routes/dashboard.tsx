@@ -6,10 +6,21 @@ import { useEffect } from "react";
 import { loadComments } from "~/utils/ytfetch";
 import { getFromGPT } from "~/utils/gpt";
 
+type User = {
+    id: string;
+    email: string;
+    // Add other user properties as needed
+};
+
 type LoaderData = {
     flashMessage: string | null;
-    user: any; // Replace with your actual user type
-    previousSearches: Array<{ url: string; painPoints: string[] }>;
+    user: User;
+    previousSearches: Array<{
+        video_url: string;
+        video_title: string;
+        thumbnail_url: string | null;
+        pain_points: string[];
+    }>;
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -37,33 +48,69 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         headers.append("Set-Cookie", "flash=; Max-Age=0; Path=/");
     }
 
-    // Dummy data for previous searches
-    const previousSearches = [
-        { url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", painPoints: ["Rickrolling", "Overplayed", "Predictable"] },
-        { url: "https://www.youtube.com/watch?v=jNQXAC9IVRw", painPoints: ["Short duration", "Low quality", "Lack of content"] },
-    ];
+    // Fetch real previous searches from the database
+    const { data: previousSearches, error } = await supabase
+        .from('youtube_searches')
+        .select('video_url, video_title, thumbnail_url, pain_points')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
 
-    return json({ flashMessage, user, previousSearches }, { headers });
+    if (error) {
+        console.error("Error fetching previous searches:", error);
+    }
+
+    return json({ flashMessage, user, previousSearches: previousSearches || [] }, { headers });
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
     const formData = await request.formData();
     const youtubeUrl = formData.get("youtubeUrl") as string;
 
-    const comments = await loadComments(youtubeUrl);
-    const { gpt, error } = await getFromGPT(comments.join("\n"));
+    const headers = new Headers();
+    const supabase = sb(request, headers);
 
-    if (error) {
-        return json({ error: "Failed to analyze comments" }, { status: 500 });
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return json({ error: "User not authenticated" }, { status: 401 });
     }
 
-    return json({ painPoints: gpt });
+    try {
+        const { title, comments } = await loadComments(youtubeUrl);
+        const { gpt, error } = await getFromGPT(comments.join("\n"));
+
+        if (error) {
+            return json({ error: "Failed to analyze comments" }, { status: 500 });
+        }
+
+        // Save the search data to the youtube_searches table
+        const { error: videoError } = await supabase
+            .from('youtube_searches')
+            .insert({
+                user_id: user.id,
+                video_url: youtubeUrl,
+                video_title: title,
+                thumbnail_url: null, // You might want to fetch this from the YouTube API
+                pain_points: gpt
+            });
+
+        if (videoError) {
+            console.error("Error saving search data:", videoError);
+            return json({ error: "Failed to save search data" }, { status: 500 });
+        }
+
+        return json({ painPoints: gpt });
+    } catch (error) {
+        console.error("Error processing YouTube data:", error);
+        return json({ error: "Failed to process YouTube data" }, { status: 500 });
+    }
 };
 
 export default function Dashboard() {
     const { flashMessage, user, previousSearches } = useLoaderData<LoaderData>();
     const navigation = useNavigation();
-    const fetcher = useFetcher();
+    const fetcher = useFetcher<{ painPoints?: string[]; error?: string }>();
 
     useEffect(() => {
         if (fetcher.data && fetcher.data.painPoints) {
@@ -102,7 +149,7 @@ export default function Dashboard() {
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold mb-4">Pain Points</h2>
                     <ul className="list-disc pl-5">
-                        {fetcher.data.painPoints.map((point: string, index: number) => (
+                        {fetcher.data.painPoints.map((point, index) => (
                             <li key={index}>{point}</li>
                         ))}
                     </ul>
@@ -126,9 +173,19 @@ export default function Dashboard() {
                 <ul className="space-y-4">
                     {previousSearches.map((search, index) => (
                         <li key={index} className="bg-base-200 p-4 rounded-lg">
-                            <p className="font-semibold">{search.url}</p>
+                            <div className="flex items-center mb-2">
+                                {search.thumbnail_url && (
+                                    <img src={search.thumbnail_url} alt="Video thumbnail" className="w-24 h-auto mr-4" />
+                                )}
+                                <div>
+                                    <p className="font-semibold">{search.video_title}</p>
+                                    <a href={search.video_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                        {search.video_url}
+                                    </a>
+                                </div>
+                            </div>
                             <ul className="list-disc pl-5 mt-2">
-                                {search.painPoints.map((point, pointIndex) => (
+                                {search.pain_points.map((point, pointIndex) => (
                                     <li key={pointIndex}>{point}</li>
                                 ))}
                             </ul>
