@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLoaderData, useNavigation, useFetcher } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
@@ -80,7 +81,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
 
     try {
-        const { title, comments } = await loadComments(youtubeUrl);
+        const { title, comments, thumbnailUrl } = await loadComments(youtubeUrl);
         const { gpt, error } = await getFromGPT(comments.join("\n"));
 
         if (error) {
@@ -94,7 +95,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
                 user_id: user.id,
                 video_url: youtubeUrl,
                 video_title: title,
-                thumbnail_url: null, // You might want to fetch this from the YouTube API
+                thumbnail_url: thumbnailUrl,
                 pain_points: gpt
             });
 
@@ -103,7 +104,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
             return json({ error: "Failed to save search data" }, { status: 500 });
         }
 
-        return json({ painPoints: gpt });
+        return json({ painPoints: gpt, videoTitle: title, videoUrl: youtubeUrl, thumbnailUrl });
     } catch (error) {
         console.error("Error processing YouTube data:", error);
         return json({ error: "Failed to process YouTube data" }, { status: 500 });
@@ -113,7 +114,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function Dashboard() {
     const { flashMessage, user, previousSearches } = useLoaderData<LoaderData>();
     const navigation = useNavigation();
-    const fetcher = useFetcher<{ painPoints?: string[]; error?: string }>();
+    const fetcher = useFetcher<{
+        painPoints?: string[];
+        error?: string;
+        videoTitle?: string;
+        videoUrl?: string;
+        thumbnailUrl?: string | null;
+    }>();
+    const [selectedSearch, setSelectedSearch] = useState<LoaderData['previousSearches'][0] | null>(null);
 
     useEffect(() => {
         if (fetcher.data && fetcher.data.painPoints) {
@@ -149,13 +157,36 @@ export default function Dashboard() {
             </fetcher.Form>
 
             {fetcher.data && fetcher.data.painPoints && (
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold mb-4">Pain Points</h2>
-                    <ul className="list-disc pl-5">
-                        {fetcher.data.painPoints.map((point, index) => (
-                            <li key={index}>{point}</li>
-                        ))}
-                    </ul>
+                <div className="mb-8 bg-base-200 p-6 rounded-lg shadow-lg relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-5" style={{
+                        backgroundImage: 'radial-gradient(circle, currentColor 0.5px, transparent 0.5px)',
+                        backgroundSize: '16px 16px'
+                    }}></div>
+                    <div className="relative z-10">
+                        <div className="flex flex-col md:flex-row items-start mb-4">
+                            <div className="w-full md:w-1/3 mb-4 md:mb-0 md:mr-6">
+                                {fetcher.data.thumbnailUrl ? (
+                                    <img src={fetcher.data.thumbnailUrl} alt="Video thumbnail" className="w-full h-auto rounded-md shadow-md" />
+                                ) : (
+                                    <div className="w-full h-0 pb-[56.25%] bg-gray-300 rounded-md flex items-center justify-center shadow-md">
+                                        <span className="text-gray-500">No thumbnail</span>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="w-full md:w-2/3">
+                                <h2 className="text-2xl font-bold mb-2">Pain Points</h2>
+                                <h3 className="text-lg font-semibold mb-2">{fetcher.data.videoTitle}</h3>
+                                <a href={fetcher.data.videoUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline mb-4 inline-block">
+                                    Watch Video
+                                </a>
+                                <ul className="list-disc pl-5 space-y-2">
+                                    {fetcher.data.painPoints.map((point, index) => (
+                                        <li key={index}>{point}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
 
@@ -173,29 +204,54 @@ export default function Dashboard() {
 
             <div>
                 <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
-                <ul className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {previousSearches.map((search, index) => (
-                        <li key={index} className="bg-base-200 p-4 rounded-lg">
-                            <div className="flex items-center mb-2">
-                                {search.thumbnail_url && (
-                                    <img src={search.thumbnail_url} alt="Video thumbnail" className="w-24 h-auto mr-4" />
-                                )}
-                                <div>
-                                    <p className="font-semibold">{search.video_title}</p>
-                                    <a href={search.video_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                                        {search.video_url}
-                                    </a>
-                                </div>
-                            </div>
-                            <ul className="list-disc pl-5 mt-2">
-                                {search.pain_points.map((point, pointIndex) => (
-                                    <li key={pointIndex}>{point}</li>
-                                ))}
-                            </ul>
-                        </li>
+                        <div
+                            key={index}
+                            className="bg-base-200 p-4 rounded-lg shadow-md cursor-pointer hover:bg-base-300 transition-colors"
+                            onClick={() => setSelectedSearch(search)}
+                        >
+                            <p className="font-semibold truncate">{search.video_title}</p>
+                        </div>
                     ))}
-                </ul>
+                </div>
             </div>
+
+            {selectedSearch && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-base-100 p-6 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-start mb-4">
+                            <h3 className="text-xl font-bold">{selectedSearch.video_title}</h3>
+                            <button
+                                onClick={() => setSelectedSearch(null)}
+                                className="text-xl font-bold"
+                            >
+                                &times;
+                            </button>
+                        </div>
+                        <div className="flex flex-col md:flex-row items-start mb-4">
+                            {selectedSearch.thumbnail_url ? (
+                                <img src={selectedSearch.thumbnail_url} alt="Video thumbnail" className="w-full md:w-1/3 h-auto mb-4 md:mb-0 md:mr-4 rounded-md" />
+                            ) : (
+                                <div className="w-full md:w-1/3 h-32 bg-gray-300 mb-4 md:mb-0 md:mr-4 rounded-md flex items-center justify-center">
+                                    <span className="text-gray-500">No thumbnail</span>
+                                </div>
+                            )}
+                            <div className="w-full md:w-2/3">
+                                <a href={selectedSearch.video_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline mb-4 inline-block">
+                                    Watch Video
+                                </a>
+                                <h4 className="font-semibold mb-2">Pain Points:</h4>
+                                <ul className="list-disc pl-5 space-y-1">
+                                    {selectedSearch.pain_points.map((point, pointIndex) => (
+                                        <li key={pointIndex}>{point}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

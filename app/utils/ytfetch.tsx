@@ -44,7 +44,7 @@ export async function loadComments(videoUrl: string) {
             item.snippet?.topLevelComment?.snippet?.textDisplay || ''
         ) || [];
 
-        return { title: videoTitle, comments };
+        return { title: videoTitle, comments, thumbnailUrl: videoResponse.data.items?.[0]?.snippet?.thumbnails?.default?.url || null };
     } catch (error) {
         console.error('Error fetching YouTube data:', error);
         throw error;
