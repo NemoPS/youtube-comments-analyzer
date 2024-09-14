@@ -67,6 +67,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const formData = await request.formData();
     const youtubeUrl = formData.get("youtubeUrl") as string;
 
+    // Uncomment the following line to use dummy data instead of real API calls
+    return json({ painPoints: getDummyPainPoints() });
+
     const headers = new Headers();
     const supabase = sb(request, headers);
 
@@ -195,4 +198,14 @@ export default function Dashboard() {
             </div>
         </div>
     );
+}
+
+function getDummyPainPoints() {
+    return [
+        "Difficulty understanding complex topics",
+        "Lack of practical examples in the video",
+        "Audio quality issues in some sections",
+        "Too much information presented too quickly",
+        "Insufficient explanation of prerequisite knowledge"
+    ];
 }
