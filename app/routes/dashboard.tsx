@@ -3,11 +3,9 @@ import { useLoaderData, useNavigation, useFetcher } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
 import { sb } from "~/api/sb";
-import { loadComments } from "~/utils/ytfetch";
-import { getFromGPT } from "~/utils/gpt";
-import { PreviousSearchCard } from "../components/PreviousSearchCard";
-import { SearchDetails, SearchDetailsProps } from "../components/SearchDetails";
 import { DummySearchCard } from "~/components/DummySearchCard";
+import { PreviousSearchCard } from "~/components/PreviousSearchCard";
+import { SearchDetails } from "~/components/SearchDetails";
 
 type User = {
     id: string;
@@ -212,15 +210,19 @@ export default function Dashboard() {
             </fetcher.Form>
 
             {isSearching ? (
-                <DummySearchCard />
+                <div className="mb-8">
+                    <DummySearchCard />
+                </div>
             ) : (
                 fetcher.data && fetcher.data.painPoints && (
-                    <SearchDetails
-                        videoTitle={fetcher.data.videoTitle || ""}
-                        videoUrl={fetcher.data.videoUrl || ""}
-                        thumbnailUrl={fetcher.data.thumbnailUrl || null}
-                        painPoints={fetcher.data.painPoints}
-                    />
+                    <div className="mb-8">
+                        <SearchDetails
+                            videoTitle={fetcher.data.videoTitle || ""}
+                            videoUrl={fetcher.data.videoUrl || ""}
+                            thumbnailUrl={fetcher.data.thumbnailUrl || null}
+                            painPoints={fetcher.data.painPoints}
+                        />
+                    </div>
                 )
             )}
 
