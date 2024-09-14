@@ -3,9 +3,10 @@ import { useLoaderData, useNavigation, useFetcher } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
 import { sb } from "~/api/sb";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { loadComments } from "~/utils/ytfetch";
 import { getFromGPT } from "~/utils/gpt";
+import { PreviousSearchCard } from "../components/PreviousSearchCard";
 
 type User = {
     id: string;
@@ -92,7 +93,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         const { error: videoError } = await supabase
             .from('youtube_searches')
             .insert({
-                user_id: user.id,
+                user_id: user.id, // This is now safe as we've checked for null above
                 video_url: youtubeUrl,
                 video_title: title,
                 thumbnail_url: thumbnailUrl,
@@ -122,6 +123,31 @@ export default function Dashboard() {
         thumbnailUrl?: string | null;
     }>();
     const [selectedSearch, setSelectedSearch] = useState<LoaderData['previousSearches'][0] | null>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+                setSelectedSearch(null);
+            }
+        }
+
+        function handleEscKey(event: KeyboardEvent) {
+            if (event.key === 'Escape') {
+                setSelectedSearch(null);
+            }
+        }
+
+        if (selectedSearch) {
+            document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('keydown', handleEscKey);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEscKey);
+        };
+    }, [selectedSearch]);
 
     useEffect(() => {
         if (fetcher.data && fetcher.data.painPoints) {
@@ -206,20 +232,18 @@ export default function Dashboard() {
                 <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {previousSearches.map((search, index) => (
-                        <div
+                        <PreviousSearchCard
                             key={index}
-                            className="bg-base-200 p-4 rounded-lg shadow-md cursor-pointer hover:bg-base-300 transition-colors"
+                            search={search}
                             onClick={() => setSelectedSearch(search)}
-                        >
-                            <p className="font-semibold truncate">{search.video_title}</p>
-                        </div>
+                        />
                     ))}
                 </div>
             </div>
 
             {selectedSearch && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-base-100 p-6 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                    <div ref={modalRef} className="bg-base-100 p-6 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fade-in-scale">
                         <div className="flex justify-between items-start mb-4">
                             <h3 className="text-xl font-bold">{selectedSearch.video_title}</h3>
                             <button

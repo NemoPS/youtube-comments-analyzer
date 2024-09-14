@@ -12,6 +12,7 @@ import "./tailwind.css";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import Nav from "./components/Nav";
 import { sb } from "./api/sb";
+import "./styles/tailwind.css";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const env = {
