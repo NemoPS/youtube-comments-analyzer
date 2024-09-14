@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useLoaderData, useNavigation, useFetcher } from "@remix-run/react";
+import { useLoaderData, useNavigation, useFetcher, useSubmit, useRevalidator } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
 import { sb } from "~/api/sb";
@@ -17,6 +17,7 @@ type LoaderData = {
     flashMessage: string | null;
     user: User;
     previousSearches: Array<{
+        id: string;
         video_url: string;
         video_title: string;
         thumbnail_url: string | null;
@@ -52,7 +53,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     // Fetch real previous searches from the database
     const { data: previousSearches, error } = await supabase
         .from('youtube_searches')
-        .select('video_url, video_title, thumbnail_url, pain_points')
+        .select('id, video_url, video_title, thumbnail_url, pain_points')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(5);
@@ -66,7 +67,32 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
     const formData = await request.formData();
-    const youtubeUrl = formData.get("youtubeUrl") as string;
+    const action = formData.get("action");
+
+    if (action === "delete") {
+        const searchId = formData.get("searchId") as string;
+        const headers = new Headers();
+        const supabase = sb(request, headers);
+
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+            return json({ error: "User not authenticated" }, { status: 401 });
+        }
+
+        const { error } = await supabase
+            .from('youtube_searches')
+            .delete()
+            .eq('id', searchId)
+            .eq('user_id', user.id);
+
+        if (error) {
+            console.error("Error deleting search:", error);
+            return json({ error: "Failed to delete search" }, { status: 500 });
+        }
+
+        return json({ success: true });
+    }
 
     // dummy timeout to simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -75,7 +101,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return json({
         painPoints: getDummyPainPoints(),
         videoTitle: "Dummy Video Title",
-        videoUrl: youtubeUrl,
+        videoUrl: formData.get("youtubeUrl") as string,
         thumbnailUrl: "https://via.placeholder.com/320x180.png?text=Dummy+Thumbnail"
     });
 
@@ -125,6 +151,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Dashboard() {
     const { flashMessage, user, previousSearches } = useLoaderData<LoaderData>();
+    const revalidator = useRevalidator();
     const navigation = useNavigation();
     const fetcher = useFetcher<{
         painPoints?: string[];
@@ -136,6 +163,15 @@ export default function Dashboard() {
     const [selectedSearch, setSelectedSearch] = useState<LoaderData['previousSearches'][0] | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
     const [isSearching, setIsSearching] = useState(false);
+    const submit = useSubmit();
+
+    const handleDelete = (searchId: string) => {
+        if (window.confirm("Are you sure you want to delete this search?")) {
+            submit({ action: "delete", searchId }, { method: "post" });
+            setSelectedSearch(null);
+            revalidator.revalidate();
+        }
+    };
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -235,9 +271,9 @@ export default function Dashboard() {
             <div>
                 <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {previousSearches.map((search, index) => (
+                    {previousSearches.map((search) => (
                         <PreviousSearchCard
-                            key={index}
+                            key={search.id}
                             search={search}
                             onClick={() => setSelectedSearch(search)}
                         />
@@ -254,6 +290,7 @@ export default function Dashboard() {
                             thumbnailUrl={selectedSearch.thumbnail_url}
                             painPoints={selectedSearch.pain_points}
                             onClose={() => setSelectedSearch(null)}
+                            onDelete={() => handleDelete(selectedSearch.id)}
                         />
                     </div>
                 </div>

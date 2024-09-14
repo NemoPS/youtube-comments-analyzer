@@ -1,4 +1,5 @@
 type PreviousSearch = {
+    id: string; // Add this line
     video_url: string;
     video_title: string;
     thumbnail_url: string | null;
