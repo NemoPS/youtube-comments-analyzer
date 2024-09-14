@@ -1,6 +1,5 @@
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
 import { sb } from "~/api/sb";
 
 export const meta: MetaFunction = () => {
