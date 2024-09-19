@@ -96,19 +96,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         return json({ success: true });
     }
 
-    // dummy timeout to simulate API call
-    // await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // // Use dummy data instead of real API calls
-    // return json({
-    //     painPoints: getDummyPainPoints(),
-    //     videoTitle: "Dummy Video Title",
-    //     videoUrl: formData.get("youtubeUrl") as string,
-    //     thumbnailUrl: "https://via.placeholder.com/320x180.png?text=Dummy+Thumbnail"
-    // });
-
-    // Comment out the real API call code
-
     const headers = new Headers();
     const supabase = sb(request, headers);
 
@@ -121,6 +108,22 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
 
     try {
+        // Fetch the user's current credits
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('credits')
+            .eq('id', user.id)
+            .single();
+
+        if (profileError) {
+            console.error("Error fetching user profile:", profileError);
+            return json({ error: "Failed to fetch user profile" }, { status: 500 });
+        }
+
+        if (profile.credits < 1) {
+            return json({ error: "Insufficient credits" }, { status: 400 });
+        }
+
         const { title, comments, thumbnailUrl } = await loadComments(youtubeUrl);
         const { gpt, error } = await getFromGPT(comments.join("\n"));
 
@@ -132,7 +135,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         const { error: videoError } = await supabase
             .from('youtube_searches')
             .insert({
-                user_id: user.id, // This is now safe as we've checked for null above and asserted the type
+                user_id: user.id,
                 video_url: youtubeUrl,
                 video_title: title,
                 thumbnail_url: thumbnailUrl,
@@ -144,12 +147,22 @@ export const action = async ({ request }: ActionFunctionArgs) => {
             return json({ error: "Failed to save search data" }, { status: 500 });
         }
 
+        // Deduct one credit from the user's profile
+        const { error: updateError } = await supabase.rpc('deduct_credits', {
+            user_id: user.id,
+            amount: 1
+        });
+
+        if (updateError) {
+            console.error("Error deducting credits:", updateError);
+            return json({ error: "Failed to deduct credits" }, { status: 500 });
+        }
+
         return json({ painPoints: gpt, videoTitle: title, videoUrl: youtubeUrl, thumbnailUrl });
     } catch (error) {
         console.error("Error processing YouTube data:", error);
         return json({ error: "Failed to process YouTube data" }, { status: 500 });
     }
-
 };
 
 export default function Dashboard() {
