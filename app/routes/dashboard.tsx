@@ -7,6 +7,7 @@ import { DummySearchCard } from "~/components/DummySearchCard";
 import { PreviousSearchCard } from "~/components/PreviousSearchCard";
 import { loadComments } from "~/utils/ytfetch";
 import { getFromGPT } from "~/utils/gpt";
+import { Spinner } from "~/components/Spinner"; // Add this import
 
 const SearchDetails = lazy(() => import("~/components/SearchDetails"));
 
@@ -197,15 +198,20 @@ export default function Dashboard() {
     const [isSearching, setIsSearching] = useState(false);
     const submit = useSubmit();
 
-    console.log('Component: Rendered with previousSearchesFetcher', previousSearchesFetcher);
+    const [isLoadingPreviousSearches, setIsLoadingPreviousSearches] = useState(true);
 
-    const handleDelete = (searchId: string) => {
-        if (window.confirm("Are you sure you want to delete this search?")) {
-            submit({ action: "delete", searchId }, { method: "post" });
-            setSelectedSearch(null);
-            revalidator.revalidate();
+    useEffect(() => {
+        setIsLoadingPreviousSearches(true);
+        previousSearchesFetcher.load(`/dashboard/previous-searches?page=${currentPage}`);
+    }, [currentPage]);
+
+    useEffect(() => {
+        if (previousSearchesFetcher.state === 'idle') {
+            setIsLoadingPreviousSearches(false);
         }
-    };
+        console.log('Previous searches data:', previousSearchesFetcher.data);
+        console.log('Previous searches state:', previousSearchesFetcher.state);
+    }, [previousSearchesFetcher.data, previousSearchesFetcher.state]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -245,13 +251,13 @@ export default function Dashboard() {
         }
     }, [fetcher.state]);
 
-    useEffect(() => {
-        previousSearchesFetcher.load(`/dashboard/previous-searches?page=${currentPage}`);
-    }, [currentPage]);
-
-    useEffect(() => {
-        console.log('Previous searches data:', previousSearchesFetcher.data);
-    }, [previousSearchesFetcher.data]);
+    const handleDelete = (searchId: string) => {
+        if (window.confirm("Are you sure you want to delete this search?")) {
+            submit({ action: "delete", searchId }, { method: "post" });
+            setSelectedSearch(null);
+            revalidator.revalidate();
+        }
+    };
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
@@ -316,7 +322,11 @@ export default function Dashboard() {
                 </div>
             )}
 
-            {previousSearchesFetcher.data ? (
+            {isLoadingPreviousSearches ? (
+                <div className="flex justify-center items-center h-32">
+                    <Spinner size="lg" />
+                </div>
+            ) : previousSearchesFetcher.data ? (
                 <>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {previousSearchesFetcher.data.previousSearches.map((search) => (
@@ -344,7 +354,15 @@ export default function Dashboard() {
                     )}
                 </>
             ) : (
-                <div>No previous searches found or error loading data.</div>
+                <div className="text-center py-4">
+                    {previousSearchesFetcher.state === 'loading' ? (
+                        <Spinner size="lg" />
+                    ) : previousSearchesFetcher.data === undefined ? (
+                        'No previous searches found.'
+                    ) : (
+                        'Error loading previous searches. Please try again.'
+                    )}
+                </div>
             )}
 
             {selectedSearch && (
