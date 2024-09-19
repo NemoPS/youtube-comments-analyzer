@@ -108,6 +108,23 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
 
     try {
+        // Check if the video URL has already been searched
+        const { data: existingSearch, error: searchError } = await supabase
+            .from('youtube_searches')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('video_url', youtubeUrl)
+            .single();
+
+        if (searchError && searchError.code !== 'PGRST116') {
+            console.error("Error checking existing search:", searchError);
+            return json({ error: "Failed to check existing search" }, { status: 500 });
+        }
+
+        if (existingSearch) {
+            return json({ error: "This video has already been analyzed" }, { status: 400 });
+        }
+
         // Fetch the user's current credits
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
@@ -313,9 +330,7 @@ export default function Dashboard() {
             )}
         </div>
     );
-}
-
-function getDummyPainPoints() {
+} function getDummyPainPoints() {
     return [
         "Difficulty understanding complex topics",
         "Lack of practical examples in the video",
@@ -324,3 +339,4 @@ function getDummyPainPoints() {
         "Insufficient explanation of prerequisite knowledge"
     ];
 }
+
