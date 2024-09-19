@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { useLoaderData, useNavigation, useFetcher, useSubmit, useRevalidator, useSearchParams } from "@remix-run/react";
+import { useLoaderData, useNavigation, useFetcher, useSubmit, useRevalidator } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
 import { sb } from "~/api/sb";
@@ -8,17 +8,12 @@ import { PreviousSearchCard } from "~/components/PreviousSearchCard";
 import { loadComments } from "~/utils/ytfetch";
 import { getFromGPT } from "~/utils/gpt";
 
-const SearchDetails = lazy(() => import("~/components/SearchDetails").then(module => ({ default: module.default })));
+const SearchDetails = lazy(() => import("~/components/SearchDetails"));
 
 type User = {
     id: string;
     email: string;
     // Add other user properties as needed
-};
-
-type LoaderData = {
-    flashMessage: string | null;
-    user: User;
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -169,9 +164,19 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Dashboard() {
     const { flashMessage, user } = useLoaderData<typeof loader>();
-    const previousSearchesFetcher = useFetcher<typeof import("./dashboard.previous-searches").loader>();
+    const previousSearchesFetcher = useFetcher<{
+        previousSearches: {
+            id: string;
+            video_url: string;
+            video_title: string;
+            thumbnail_url: string | null;
+            pain_points: string[];
+        }[];
+        totalPages: number;
+        currentPage: number;
+    }>();
+
     const [currentPage, setCurrentPage] = useState(1);
-    const [, setSearchParams] = useSearchParams();
     const revalidator = useRevalidator();
     const navigation = useNavigation();
     const fetcher = useFetcher<{
@@ -244,6 +249,10 @@ export default function Dashboard() {
         previousSearchesFetcher.load(`/dashboard/previous-searches?page=${currentPage}`);
     }, [currentPage]);
 
+    useEffect(() => {
+        console.log('Previous searches data:', previousSearchesFetcher.data);
+    }, [previousSearchesFetcher.data]);
+
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
     };
@@ -307,41 +316,36 @@ export default function Dashboard() {
                 </div>
             )}
 
-            <div>
-                <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
-                {previousSearchesFetcher.state === "loading" ? (
-                    <div>Loading previous searches...</div>
-                ) : previousSearchesFetcher.data && 'previousSearches' in previousSearchesFetcher.data && 'totalPages' in previousSearchesFetcher.data ? (
-                    <>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            {previousSearchesFetcher.data.previousSearches.map((search) => (
-                                <PreviousSearchCard
-                                    key={search.id}
-                                    search={search}
-                                    onClick={() => setSelectedSearch(search)}
-                                />
-                            ))}
-                        </div>
-                        {previousSearchesFetcher.data.totalPages > 1 && (
-                            <div className="flex justify-center mt-4">
-                                <div className="btn-group">
-                                    {Array.from({ length: previousSearchesFetcher.data.totalPages }, (_, i) => i + 1).map((page) => (
-                                        <button
-                                            key={page}
-                                            className={`btn ${page === currentPage ? 'btn-active' : ''}`}
-                                            onClick={() => handlePageChange(page)}
-                                        >
-                                            {page}
-                                        </button>
-                                    ))}
-                                </div>
+            {previousSearchesFetcher.data ? (
+                <>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {previousSearchesFetcher.data.previousSearches.map((search) => (
+                            <PreviousSearchCard
+                                key={search.id}
+                                search={search}
+                                onClick={() => setSelectedSearch(search)}
+                            />
+                        ))}
+                    </div>
+                    {previousSearchesFetcher.data.totalPages > 1 && (
+                        <div className="flex justify-center mt-4">
+                            <div className="btn-group">
+                                {Array.from({ length: previousSearchesFetcher.data.totalPages }, (_, i) => i + 1).map((page) => (
+                                    <button
+                                        key={page}
+                                        className={`btn ${page === currentPage ? 'btn-active' : ''}`}
+                                        onClick={() => handlePageChange(page)}
+                                    >
+                                        {page}
+                                    </button>
+                                ))}
                             </div>
-                        )}
-                    </>
-                ) : (
-                    <div>No previous searches found or error loading data.</div>
-                )}
-            </div>
+                        </div>
+                    )}
+                </>
+            ) : (
+                <div>No previous searches found or error loading data.</div>
+            )}
 
             {selectedSearch && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">

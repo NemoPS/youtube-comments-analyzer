@@ -7,7 +7,7 @@ export type SearchDetailsProps = {
     onDelete?: () => void; // Add this line
 };
 
-export function SearchDetails({ videoTitle, videoUrl, thumbnailUrl, painPoints, onClose, onDelete }: SearchDetailsProps) {
+export default function SearchDetails({ videoTitle, videoUrl, thumbnailUrl, painPoints, onClose, onDelete }: SearchDetailsProps) {
     return (
         <div className="bg-base-200 rounded-lg p-6">
             <div className="flex flex-col md:flex-row md:space-x-6">
