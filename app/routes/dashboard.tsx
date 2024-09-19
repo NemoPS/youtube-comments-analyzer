@@ -209,8 +209,8 @@ export default function Dashboard() {
         if (previousSearchesFetcher.state === 'idle') {
             setIsLoadingPreviousSearches(false);
         }
-        console.log('Previous searches data:', previousSearchesFetcher.data);
-        console.log('Previous searches state:', previousSearchesFetcher.state);
+        // console.log('Previous searches data:', previousSearchesFetcher.data);
+        // console.log('Previous searches state:', previousSearchesFetcher.state);
     }, [previousSearchesFetcher.data, previousSearchesFetcher.state]);
 
     useEffect(() => {
@@ -328,6 +328,7 @@ export default function Dashboard() {
                 </div>
             ) : previousSearchesFetcher.data ? (
                 <>
+                    <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {previousSearchesFetcher.data.previousSearches.map((search) => (
                             <PreviousSearchCard
@@ -339,7 +340,7 @@ export default function Dashboard() {
                     </div>
                     {previousSearchesFetcher.data.totalPages > 1 && (
                         <div className="flex justify-center mt-4">
-                            <div className="btn-group">
+                            <div className="btn-group space-x-2">
                                 {Array.from({ length: previousSearchesFetcher.data.totalPages }, (_, i) => i + 1).map((page) => (
                                     <button
                                         key={page}
