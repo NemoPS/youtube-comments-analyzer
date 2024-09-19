@@ -1,13 +1,16 @@
-import { useState, useEffect, useRef } from "react";
-import { useLoaderData, useNavigation, useFetcher, useSubmit, useRevalidator } from "@remix-run/react";
+import { useState, useEffect, useRef, lazy, Suspense, useMemo } from "react";
+import { useLoaderData, useNavigation, useFetcher, useSubmit, useRevalidator, useSearchParams, useLocation } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
 import { sb } from "~/api/sb";
 import { DummySearchCard } from "~/components/DummySearchCard";
 import { PreviousSearchCard } from "~/components/PreviousSearchCard";
-import { SearchDetails } from "~/components/SearchDetails";
 import { loadComments } from "~/utils/ytfetch";
 import { getFromGPT } from "~/utils/gpt";
+import { defer } from "@remix-run/node";
+import { Await } from "@remix-run/react";
+
+const SearchDetails = lazy(() => import("~/components/SearchDetails"));
 
 type User = {
     id: string;
@@ -18,13 +21,6 @@ type User = {
 type LoaderData = {
     flashMessage: string | null;
     user: User;
-    previousSearches: Array<{
-        id: string;
-        video_url: string;
-        video_title: string;
-        thumbnail_url: string | null;
-        pain_points: string[];
-    }>;
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -52,19 +48,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         headers.append("Set-Cookie", "flash=; Max-Age=0; Path=/");
     }
 
-    // Fetch real previous searches from the database
-    const { data: previousSearches, error } = await supabase
-        .from('youtube_searches')
-        .select('id, video_url, video_title, thumbnail_url, pain_points')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-    if (error) {
-        console.error("Error fetching previous searches:", error);
-    }
-
-    return json({ flashMessage, user, previousSearches: previousSearches || [] }, { headers });
+    return json({
+        flashMessage,
+        user,
+    }, { headers });
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -183,7 +170,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Dashboard() {
-    const { flashMessage, user, previousSearches } = useLoaderData<LoaderData>();
+    const { flashMessage, user } = useLoaderData<typeof loader>();
+    const previousSearchesFetcher = useFetcher<typeof import("./dashboard.previous-searches").loader>();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchParams, setSearchParams] = useSearchParams();
     const revalidator = useRevalidator();
     const navigation = useNavigation();
     const fetcher = useFetcher<{
@@ -193,10 +183,12 @@ export default function Dashboard() {
         videoUrl?: string;
         thumbnailUrl?: string | null;
     }>();
-    const [selectedSearch, setSelectedSearch] = useState<LoaderData['previousSearches'][0] | null>(null);
+    const [selectedSearch, setSelectedSearch] = useState<any>(null);
     const modalRef = useRef<HTMLDivElement>(null);
     const [isSearching, setIsSearching] = useState(false);
     const submit = useSubmit();
+
+    console.log('Component: Rendered with previousSearchesFetcher', previousSearchesFetcher);
 
     const handleDelete = (searchId: string) => {
         if (window.confirm("Are you sure you want to delete this search?")) {
@@ -244,6 +236,14 @@ export default function Dashboard() {
         }
     }, [fetcher.state]);
 
+    useEffect(() => {
+        previousSearchesFetcher.load(`/dashboard/previous-searches?page=${currentPage}`);
+    }, [currentPage]);
+
+    const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage);
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
@@ -285,12 +285,14 @@ export default function Dashboard() {
             ) : (
                 fetcher.data && fetcher.data.painPoints && (
                     <div className="mb-8">
-                        <SearchDetails
-                            videoTitle={fetcher.data.videoTitle || ""}
-                            videoUrl={fetcher.data.videoUrl || ""}
-                            thumbnailUrl={fetcher.data.thumbnailUrl || null}
-                            painPoints={fetcher.data.painPoints}
-                        />
+                        <Suspense fallback={<div>Loading search details...</div>}>
+                            <SearchDetails
+                                videoTitle={fetcher.data.videoTitle || ""}
+                                videoUrl={fetcher.data.videoUrl || ""}
+                                thumbnailUrl={fetcher.data.thumbnailUrl || null}
+                                painPoints={fetcher.data.painPoints}
+                            />
+                        </Suspense>
                     </div>
                 )
             )}
@@ -303,40 +305,57 @@ export default function Dashboard() {
 
             <div>
                 <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {previousSearches.map((search) => (
-                        <PreviousSearchCard
-                            key={search.id}
-                            search={search}
-                            onClick={() => setSelectedSearch(search)}
-                        />
-                    ))}
-                </div>
+                {previousSearchesFetcher.state === "loading" ? (
+                    <div>Loading previous searches...</div>
+                ) : previousSearchesFetcher.data ? (
+                    <>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {previousSearchesFetcher.data.previousSearches.map((search) => (
+                                <PreviousSearchCard
+                                    key={search.id}
+                                    search={search}
+                                    onClick={() => setSelectedSearch(search)}
+                                />
+                            ))}
+                        </div>
+                        {previousSearchesFetcher.data.totalPages > 1 && (
+                            <div className="flex justify-center mt-4">
+                                <div className="btn-group">
+                                    {Array.from({ length: previousSearchesFetcher.data.totalPages }, (_, i) => i + 1).map((page) => (
+                                        <button
+                                            key={page}
+                                            className={`btn ${page === currentPage ? 'btn-active' : ''}`}
+                                            onClick={() => handlePageChange(page)}
+                                        >
+                                            {page}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <div>No previous searches found.</div>
+                )}
             </div>
 
             {selectedSearch && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div ref={modalRef} className="bg-base-100 p-6 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fade-in-scale">
-                        <SearchDetails
-                            videoTitle={selectedSearch.video_title}
-                            videoUrl={selectedSearch.video_url}
-                            thumbnailUrl={selectedSearch.thumbnail_url}
-                            painPoints={selectedSearch.pain_points}
-                            onClose={() => setSelectedSearch(null)}
-                            onDelete={() => handleDelete(selectedSearch.id)}
-                        />
+                        <Suspense fallback={<div>Loading search details...</div>}>
+                            <SearchDetails
+                                videoTitle={selectedSearch.video_title}
+                                videoUrl={selectedSearch.video_url}
+                                thumbnailUrl={selectedSearch.thumbnail_url}
+                                painPoints={selectedSearch.pain_points}
+                                onClose={() => setSelectedSearch(null)}
+                                onDelete={() => handleDelete(selectedSearch.id)}
+                            />
+                        </Suspense>
                     </div>
                 </div>
             )}
         </div>
     );
-} function getDummyPainPoints() {
-    return [
-        "Difficulty understanding complex topics",
-        "Lack of practical examples in the video",
-        "Audio quality issues in some sections",
-        "Too much information presented too quickly",
-        "Insufficient explanation of prerequisite knowledge"
-    ];
 }
 
