@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, lazy, Suspense, useMemo } from "react";
-import { useLoaderData, useNavigation, useFetcher, useSubmit, useRevalidator, useSearchParams, useLocation } from "@remix-run/react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useLoaderData, useNavigation, useFetcher, useSubmit, useRevalidator, useSearchParams } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
 import { sb } from "~/api/sb";
@@ -7,10 +7,8 @@ import { DummySearchCard } from "~/components/DummySearchCard";
 import { PreviousSearchCard } from "~/components/PreviousSearchCard";
 import { loadComments } from "~/utils/ytfetch";
 import { getFromGPT } from "~/utils/gpt";
-import { defer } from "@remix-run/node";
-import { Await } from "@remix-run/react";
 
-const SearchDetails = lazy(() => import("~/components/SearchDetails"));
+const SearchDetails = lazy(() => import("~/components/SearchDetails").then(module => ({ default: module.default })));
 
 type User = {
     id: string;
@@ -173,7 +171,7 @@ export default function Dashboard() {
     const { flashMessage, user } = useLoaderData<typeof loader>();
     const previousSearchesFetcher = useFetcher<typeof import("./dashboard.previous-searches").loader>();
     const [currentPage, setCurrentPage] = useState(1);
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [, setSearchParams] = useSearchParams();
     const revalidator = useRevalidator();
     const navigation = useNavigation();
     const fetcher = useFetcher<{
@@ -183,7 +181,13 @@ export default function Dashboard() {
         videoUrl?: string;
         thumbnailUrl?: string | null;
     }>();
-    const [selectedSearch, setSelectedSearch] = useState<any>(null);
+    const [selectedSearch, setSelectedSearch] = useState<{
+        id: string;
+        video_title: string;
+        video_url: string;
+        thumbnail_url: string | null;
+        pain_points: string[];
+    } | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
     const [isSearching, setIsSearching] = useState(false);
     const submit = useSubmit();
@@ -307,7 +311,7 @@ export default function Dashboard() {
                 <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
                 {previousSearchesFetcher.state === "loading" ? (
                     <div>Loading previous searches...</div>
-                ) : previousSearchesFetcher.data ? (
+                ) : previousSearchesFetcher.data && 'previousSearches' in previousSearchesFetcher.data && 'totalPages' in previousSearchesFetcher.data ? (
                     <>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {previousSearchesFetcher.data.previousSearches.map((search) => (
@@ -335,7 +339,7 @@ export default function Dashboard() {
                         )}
                     </>
                 ) : (
-                    <div>No previous searches found.</div>
+                    <div>No previous searches found or error loading data.</div>
                 )}
             </div>
 

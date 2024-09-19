@@ -64,21 +64,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const headers = new Headers();
     const supabase = sb(request, headers);
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const [{ data: { user } }, { data: profile }] = await Promise.all([
+        supabase.auth.getUser(),
+        supabase.from("profiles").select("*").single()
+    ]);
 
     if (!user) {
-        // Redirect to home page if user is not logged in
         return redirect("/", { headers });
     }
 
-    // Combine user and profile fetch into a single query
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-    // Fetch products (now cached)
+    // Use cached products or fetch if cache is expired
     const products = await getProducts();
 
     return json({

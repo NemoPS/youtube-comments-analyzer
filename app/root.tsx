@@ -7,12 +7,16 @@ import {
   useLoaderData,
   isRouteErrorResponse,
   useRouteError,
+  useNavigation,
 } from "@remix-run/react";
 import "./tailwind.css";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import Nav from "./components/Nav";
 import { sb } from "./api/sb";
 import "./styles/tailwind.css";
+import "./styles/transitions.css";
+import LoadingIndicator from "./components/LoadingIndicator";
+import { TransitionWrapper } from "./components/TransitionWrapper";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const env = {
@@ -89,13 +93,17 @@ export function ErrorBoundary() {
 
 export default function App() {
   const { env, user, profile, avatarUrl } = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
 
   return (
     <Document>
-      <div data-theme="mytheme">
-        <Nav env={env} user={user} profile={profile} avatarUrl={avatarUrl} />
-        <Outlet />
-      </div>
+      {navigation.state !== "idle" && <LoadingIndicator />}
+      <Nav env={env} user={user} profile={profile} avatarUrl={avatarUrl} />
+      <TransitionWrapper>
+        <main className="content-container">
+          <Outlet />
+        </main>
+      </TransitionWrapper>
     </Document>
   );
 }
