@@ -219,6 +219,16 @@ export default function Dashboard() {
     const [urlError, setUrlError] = useState("");
     const [showError, setShowError] = useState(false);
 
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+    // Load previous searches only on initial component mount
+    useEffect(() => {
+        if (isInitialLoad) {
+            previousSearchesFetcher.load(`/dashboard/previous-searches?page=${currentPage}`);
+            setIsInitialLoad(false);
+        }
+    }, [isInitialLoad, currentPage]);
+
     const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setYoutubeUrl(value);
@@ -239,7 +249,7 @@ export default function Dashboard() {
             setUrlError("Please enter a valid YouTube URL");
             return;
         }
-        // Use fetcher.submit instead of e.currentTarget.submit()
+        setIsSearching(true);
         fetcher.submit(
             { youtubeUrl },
             { method: "post", action: "/dashboard" }
@@ -247,43 +257,23 @@ export default function Dashboard() {
     };
 
     useEffect(() => {
-        setIsLoadingPreviousSearches(true);
-        previousSearchesFetcher.load(`/dashboard/previous-searches?page=${currentPage}`);
-    }, [currentPage]);
-
-    useEffect(() => {
-        if (previousSearchesFetcher.state === 'idle') {
-            setIsLoadingPreviousSearches(false);
-        }
-        // console.log('Previous searches data:', previousSearchesFetcher.data);
-        // console.log('Previous searches state:', previousSearchesFetcher.state);
-    }, [previousSearchesFetcher.data, previousSearchesFetcher.state]);
-
-    useEffect(() => {
-        if (fetcher.data && 'painPoints' in fetcher.data && fetcher.data.painPoints) {
-            console.log("Pain points:", fetcher.data.painPoints);
-        }
-    }, [fetcher.data]);
-
-    useEffect(() => {
-        if (fetcher.state === "submitting" || fetcher.state === "loading") {
-            setIsSearching(true);
-        } else {
+        if (fetcher.state === "idle" && fetcher.data) {
             setIsSearching(false);
-            // Clear the input field if the search was successful
-            if (fetcher.data && !('error' in fetcher.data)) {
+            if (!('error' in fetcher.data)) {
                 setYoutubeUrl("");
+                // Only reload previous searches if the search was successful
+                previousSearchesFetcher.load(`/dashboard/previous-searches?page=${currentPage}`);
             }
         }
-    }, [fetcher.state, fetcher.data]);
+    }, [fetcher.state, fetcher.data, currentPage]);
 
     useEffect(() => {
-        if (previousSearchesFetcher.state === "loading") {
+        if (previousSearchesFetcher.state === "loading" && !isInitialLoad) {
             setIsLoadingPreviousSearches(true);
         } else if (previousSearchesFetcher.state === "idle") {
             setIsLoadingPreviousSearches(false);
         }
-    }, [previousSearchesFetcher.state]);
+    }, [previousSearchesFetcher.state, isInitialLoad]);
 
     useEffect(() => {
         if (fetcher.data && 'error' in fetcher.data && fetcher.data.error) {
@@ -296,6 +286,7 @@ export default function Dashboard() {
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
+        previousSearchesFetcher.load(`/dashboard/previous-searches?page=${newPage}`);
     };
 
     return (
@@ -353,7 +344,7 @@ export default function Dashboard() {
                         </div>
                     )}
 
-                    {isLoadingPreviousSearches ? (
+                    {isInitialLoad ? (
                         <div className="flex justify-center items-center h-32">
                             <Spinner size="lg" />
                         </div>
