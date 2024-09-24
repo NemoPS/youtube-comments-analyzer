@@ -258,9 +258,20 @@ export default function Dashboard() {
     useEffect(() => {
         if (fetcher.state === "idle" && fetcher.data) {
             setIsSearching(false);
-            if (!('error' in fetcher.data)) {
+            if ('error' in fetcher.data && fetcher.data.error) {
+                // Show error toast
+                showCustomToast({
+                    message: fetcher.data.error,
+                    type: 'error'
+                });
+            } else {
+                // Show success toast and reset form
                 setYoutubeUrl("");
-                // Only reload previous searches if the search was successful
+                showCustomToast({
+                    message: "Video analysis completed successfully!",
+                    type: 'success'
+                });
+                // Reload previous searches
                 previousSearchesFetcher.load(`/dashboard/previous-searches?page=${currentPage}`);
             }
         }
@@ -275,16 +286,6 @@ export default function Dashboard() {
             // setIsLoadingPreviousSearches(false);
         }
     }, [previousSearchesFetcher.state, isInitialLoad]);
-
-    useEffect(() => {
-        if (fetcher.data && 'error' in fetcher.data && fetcher.data.error) {
-            showCustomToast({
-                message: fetcher.data.error,
-                type: 'error'
-            });
-            setIsSearching(false);  // Ensure search state is reset on error
-        }
-    }, [fetcher.data]);
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
