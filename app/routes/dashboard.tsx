@@ -262,12 +262,6 @@ export default function Dashboard() {
                         </div>
                     </fetcher.Form>
 
-                    {isSearching ? (
-                        <div className="mb-8">
-                            <DummySearchCard />
-                        </div>
-                    ) : null}
-
                     {fetcher.data && 'error' in fetcher.data && fetcher.data.error && (
                         <div className="alert alert-error mb-8">
                             <span>{fetcher.data.error}</span>
@@ -282,6 +276,7 @@ export default function Dashboard() {
                         <>
                             <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                {isSearching && <DummySearchCard />}
                                 {previousSearchesFetcher.data.previousSearches.map((search) => (
                                     <PreviousSearchCard
                                         key={search.id}
