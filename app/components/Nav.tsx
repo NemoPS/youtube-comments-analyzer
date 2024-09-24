@@ -42,7 +42,7 @@ export default function Nav({ env, user, profile, avatarUrl }: NavProps) {
         dialogRef.current?.showModal();
     }
 
-    return <div className="navbar bg-base-100">
+    return <div className="navbar bg-base-100 px-4">
         <div className="flex-1">
             {user ? (
                 <Link to="/dashboard" className="btn btn-outline btn-primary btn-sm">
@@ -52,7 +52,8 @@ export default function Nav({ env, user, profile, avatarUrl }: NavProps) {
                 </Link>
             ) : (
                 <Link to="/" className="flex items-center">
-                    <span className="text-xl font-bold">InsighTube</span>
+                    <img src="/tubevoice_logo.png" alt="TubeVoice Logo" className="h-8 w-auto mr-2" />
+                    <span className="text-xl font-bold text-white">TubeVoice</span>
                 </Link>
             )}
         </div>

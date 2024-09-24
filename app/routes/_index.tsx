@@ -8,8 +8,8 @@ import { useEffect, useRef } from "react";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "InsighTube - YouTube Comment Analyzer" },
-    { name: "description", content: "Unlock the power of YouTube comment analysis with InsighTube" },
+    { title: "TubeVoice - YouTube Comment Analyzer" },
+    { name: "description", content: "Unlock the power of YouTube comment analysis with TubeVoice" },
   ];
 };
 
@@ -66,12 +66,10 @@ export default function Index() {
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                    See what your audience wants in <s className="text-error">hours</s>    <span className="text-primary">minutes</span>.
+                    Stop <s className="text-error">guessing</s>. Start <span className="text-primary">knowing</span> what your audience craves.
                   </h1>
                   <p className="max-w-[600px] text-base-content/70 md:text-xl">
-                    Our AI rapidly analyzes comments,
-                    uncovering insights that take days manually. While others sift, you'll create content that
-                    resonates, addressing audience needs and growing your channel faster.
+                    Tired of wasting time on videos that don&apos;t resonate? Our AI decodes your audience&apos;s desires in minutes, not days. While others struggle to connect, you&apos;ll be creating content that captivates, driving explosive channel growth.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -173,7 +171,7 @@ export default function Index() {
         </section>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-base-300 relative z-10">
-        <p className="text-xs text-base-content/70">&copy; 2024 InsighTube. All rights reserved.</p>
+        <p className="text-xs text-base-content/70">&copy; 2024 TubeVoice. All rights reserved.</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link to="#" className="text-xs hover:underline underline-offset-4">
             Terms of Service
