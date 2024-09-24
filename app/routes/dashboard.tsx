@@ -15,6 +15,21 @@ type User = {
     // Add other user properties as needed
 };
 
+// Add these functions at the top of the file, outside of the component
+function isValidUrl(string: string): boolean {
+    try {
+        const url = new URL(string);
+        return url.protocol === "http:" || url.protocol === "https:";
+    } catch (_) {
+        return false;
+    }
+}
+
+function isYoutubeUrl(url: string): boolean {
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11}$/;
+    return youtubeRegex.test(url);
+}
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
     const headers = new Headers();
     const supabase = sb(request, headers);
@@ -84,6 +99,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     if (!user) {
         return json({ error: "User not authenticated" }, { status: 401 });
+    }
+
+    // Server-side validation
+    if (!isValidUrl(youtubeUrl)) {
+        return json({ error: "Please enter a valid URL" }, { status: 400 });
+    }
+    if (!isYoutubeUrl(youtubeUrl)) {
+        return json({ error: "Please enter a valid YouTube video URL" }, { status: 400 });
     }
 
     try {
@@ -192,6 +215,37 @@ export default function Dashboard() {
     const [isSearching, setIsSearching] = useState(false);
     const [isLoadingPreviousSearches, setIsLoadingPreviousSearches] = useState(true);
 
+    const [youtubeUrl, setYoutubeUrl] = useState("");
+    const [urlError, setUrlError] = useState("");
+    const [showError, setShowError] = useState(false);
+
+    const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setYoutubeUrl(value);
+        if (!value) {
+            setUrlError("");
+        } else if (!isValidUrl(value)) {
+            setUrlError("Please enter a valid URL");
+        } else if (!isYoutubeUrl(value)) {
+            setUrlError("Please enter a valid YouTube video URL");
+        } else {
+            setUrlError("");
+        }
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!youtubeUrl || !isValidUrl(youtubeUrl) || !isYoutubeUrl(youtubeUrl)) {
+            setUrlError("Please enter a valid YouTube URL");
+            return;
+        }
+        // Use fetcher.submit instead of e.currentTarget.submit()
+        fetcher.submit(
+            { youtubeUrl },
+            { method: "post", action: "/dashboard" }
+        );
+    };
+
     useEffect(() => {
         setIsLoadingPreviousSearches(true);
         previousSearchesFetcher.load(`/dashboard/previous-searches?page=${currentPage}`);
@@ -212,12 +266,33 @@ export default function Dashboard() {
     }, [fetcher.data]);
 
     useEffect(() => {
-        if (fetcher.state === "submitting") {
+        if (fetcher.state === "submitting" || fetcher.state === "loading") {
             setIsSearching(true);
         } else {
             setIsSearching(false);
+            // Clear the input field if the search was successful
+            if (fetcher.data && !('error' in fetcher.data)) {
+                setYoutubeUrl("");
+            }
         }
-    }, [fetcher.state]);
+    }, [fetcher.state, fetcher.data]);
+
+    useEffect(() => {
+        if (previousSearchesFetcher.state === "loading") {
+            setIsLoadingPreviousSearches(true);
+        } else if (previousSearchesFetcher.state === "idle") {
+            setIsLoadingPreviousSearches(false);
+        }
+    }, [previousSearchesFetcher.state]);
+
+    useEffect(() => {
+        if (fetcher.data && 'error' in fetcher.data && fetcher.data.error) {
+            setShowError(true);
+            setIsSearching(false);  // Ensure search state is reset on error
+            const timer = setTimeout(() => setShowError(false), 5000); // Hide error after 5 seconds
+            return () => clearTimeout(timer);
+        }
+    }, [fetcher.data]);
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
@@ -240,30 +315,40 @@ export default function Dashboard() {
 
             {isMainDashboard ? (
                 <>
-                    <fetcher.Form method="post" className="mb-8">
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                name="youtubeUrl"
-                                placeholder="Enter YouTube URL"
-                                className="input input-bordered flex-grow"
-                                required
-                            />
-                            <button type="submit" className="btn btn-primary" disabled={isSearching}>
-                                {isSearching ? (
-                                    <>
-                                        <span className="loading loading-spinner"></span>
-                                        Searching...
-                                    </>
-                                ) : (
-                                    'Search'
-                                )}
-                            </button>
+                    <fetcher.Form method="post" className="mb-8" onSubmit={handleSubmit}>
+                        <div className="flex flex-col gap-2">
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    name="youtubeUrl"
+                                    value={youtubeUrl}
+                                    onChange={handleUrlChange}
+                                    placeholder="Enter YouTube URL"
+                                    className={`input input-bordered flex-grow ${urlError ? 'input-error' : ''}`}
+                                    required
+                                    disabled={isSearching}
+                                />
+                                <button
+                                    type="submit"
+                                    className={`btn btn-primary ${isSearching ? 'btn-disabled' : ''}`}
+                                    disabled={isSearching || !!urlError}
+                                >
+                                    {isSearching ? (
+                                        <>
+                                            <span className="loading loading-spinner"></span>
+                                            Searching...
+                                        </>
+                                    ) : (
+                                        'Search'
+                                    )}
+                                </button>
+                            </div>
+                            {urlError && <p className="text-error text-sm">{urlError}</p>}
                         </div>
                     </fetcher.Form>
 
-                    {fetcher.data && 'error' in fetcher.data && fetcher.data.error && (
-                        <div className="alert alert-error mb-8">
+                    {showError && fetcher.data && 'error' in fetcher.data && fetcher.data.error && (
+                        <div className="alert alert-error mb-8 transition-opacity duration-500 ease-in-out">
                             <span>{fetcher.data.error}</span>
                         </div>
                     )}
