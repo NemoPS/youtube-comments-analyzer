@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { useLoaderData, useNavigation, useFetcher, useSubmit, useRevalidator } from "@remix-run/react";
+import { useState, useEffect } from "react";
+import { useLoaderData, useNavigation, useFetcher, Outlet, useLocation } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
 import { sb } from "~/api/sb";
@@ -7,9 +7,7 @@ import { DummySearchCard } from "~/components/DummySearchCard";
 import { PreviousSearchCard } from "~/components/PreviousSearchCard";
 import { loadComments } from "~/utils/ytfetch";
 import { getFromGPT } from "~/utils/gpt";
-import { Spinner } from "~/components/Spinner"; // Add this import
-
-const SearchDetails = lazy(() => import("~/components/SearchDetails"));
+import { Spinner } from "~/components/Spinner";
 
 type User = {
     id: string;
@@ -172,6 +170,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Dashboard() {
     const { flashMessage, user } = useLoaderData<typeof loader>();
+    const location = useLocation();
+    const isMainDashboard = location.pathname === "/dashboard";
     const previousSearchesFetcher = useFetcher<{
         previousSearches: {
             id: string;
@@ -186,28 +186,10 @@ export default function Dashboard() {
     }>();
 
     const [currentPage, setCurrentPage] = useState(1);
-    const revalidator = useRevalidator();
     const navigation = useNavigation();
-    const fetcher = useFetcher<{
-        painPoints?: Array<{ topic: string; description: string }>;
-        discussedTopics?: Array<{ topic: string; description: string }>;
-        error?: string;
-        videoTitle?: string;
-        videoUrl?: string;
-        thumbnailUrl?: string | null;
-    }>();
-    const [selectedSearch, setSelectedSearch] = useState<{
-        id: string;
-        video_title: string;
-        video_url: string;
-        thumbnail_url: string | null;
-        pain_points: Array<{ topic: string; description: string }>;
-        discussed_topics: Array<{ topic: string; description: string }>;
-    } | null>(null);
-    const modalRef = useRef<HTMLDivElement>(null);
-    const [isSearching, setIsSearching] = useState(false);
-    const submit = useSubmit();
+    const fetcher = useFetcher<FetcherData>();
 
+    const [isSearching, setIsSearching] = useState(false);
     const [isLoadingPreviousSearches, setIsLoadingPreviousSearches] = useState(true);
 
     useEffect(() => {
@@ -224,31 +206,7 @@ export default function Dashboard() {
     }, [previousSearchesFetcher.data, previousSearchesFetcher.state]);
 
     useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-                setSelectedSearch(null);
-            }
-        }
-
-        function handleEscKey(event: KeyboardEvent) {
-            if (event.key === 'Escape') {
-                setSelectedSearch(null);
-            }
-        }
-
-        if (selectedSearch) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscKey);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscKey);
-        };
-    }, [selectedSearch]);
-
-    useEffect(() => {
-        if (fetcher.data && fetcher.data.painPoints) {
+        if (fetcher.data && 'painPoints' in fetcher.data && fetcher.data.painPoints) {
             console.log("Pain points:", fetcher.data.painPoints);
         }
     }, [fetcher.data]);
@@ -261,21 +219,18 @@ export default function Dashboard() {
         }
     }, [fetcher.state]);
 
-    const handleDelete = (searchId: string) => {
-        if (window.confirm("Are you sure you want to delete this search?")) {
-            submit({ action: "delete", searchId }, { method: "post" });
-            setSelectedSearch(null);
-            revalidator.revalidate();
-        }
-    };
-
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
     };
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+            {isMainDashboard && (
+                <>
+                    <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+                    <p className="mb-4">Welcome, {user.email}</p>
+                </>
+            )}
 
             {flashMessage && navigation.state === "idle" && (
                 <div className="alert alert-success mb-4">
@@ -283,125 +238,88 @@ export default function Dashboard() {
                 </div>
             )}
 
-            <p className="mb-4">Welcome, {user.email}</p>
-
-            <fetcher.Form method="post" className="mb-8">
-                <div className="flex gap-2">
-                    <input
-                        type="text"
-                        name="youtubeUrl"
-                        placeholder="Enter YouTube URL"
-                        className="input input-bordered flex-grow"
-                        required
-                    />
-                    <button type="submit" className="btn btn-primary" disabled={isSearching}>
-                        {isSearching ? (
-                            <>
-                                <span className="loading loading-spinner"></span>
-                                Searching...
-                            </>
-                        ) : (
-                            'Search'
-                        )}
-                    </button>
-                </div>
-            </fetcher.Form>
-
-            {isSearching ? (
-                <div className="mb-8">
-                    <DummySearchCard />
-                </div>
-            ) : (
-                fetcher.data && fetcher.data.painPoints && (
-                    <div className="mb-8">
-                        <Suspense fallback={<div>Loading search details...</div>}>
-                            <SearchDetails
-                                videoTitle={fetcher.data.videoTitle || ""}
-                                videoUrl={fetcher.data.videoUrl || ""}
-                                thumbnailUrl={fetcher.data.thumbnailUrl || null}
-                                painPoints={fetcher.data.painPoints}
-                                discussedTopics={fetcher.data.discussedTopics || []}
-                            />
-                        </Suspense>
-                    </div>
-                )
-            )}
-
-            {fetcher.data && fetcher.data.error && (
-                <div className="alert alert-error mb-8">
-                    <span>{fetcher.data.error}</span>
-                </div>
-            )}
-
-            {isLoadingPreviousSearches ? (
-                <div className="flex justify-center items-center h-32">
-                    <Spinner size="lg" />
-                </div>
-            ) : previousSearchesFetcher.data ? (
+            {isMainDashboard ? (
                 <>
-                    <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {previousSearchesFetcher.data.previousSearches.map((search) => (
-                            <PreviousSearchCard
-                                key={search.id}
-                                search={search}
-                                onClick={() => setSelectedSearch({
-                                    id: search.id,
-                                    video_title: search.video_title,
-                                    video_url: search.video_url,
-                                    thumbnail_url: search.thumbnail_url,
-                                    pain_points: search.pain_points,
-                                    discussed_topics: search.discussed_topics
-                                })}
+                    <fetcher.Form method="post" className="mb-8">
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                name="youtubeUrl"
+                                placeholder="Enter YouTube URL"
+                                className="input input-bordered flex-grow"
+                                required
                             />
-                        ))}
-                    </div>
-                    {previousSearchesFetcher.data.totalPages > 1 && (
-                        <div className="flex justify-center mt-4">
-                            <div className="btn-group space-x-2">
-                                {Array.from({ length: previousSearchesFetcher.data.totalPages }, (_, i) => i + 1).map((page) => (
-                                    <button
-                                        key={page}
-                                        className={`btn ${page === currentPage ? 'btn-active' : ''}`}
-                                        onClick={() => handlePageChange(page)}
-                                    >
-                                        {page}
-                                    </button>
-                                ))}
-                            </div>
+                            <button type="submit" className="btn btn-primary" disabled={isSearching}>
+                                {isSearching ? (
+                                    <>
+                                        <span className="loading loading-spinner"></span>
+                                        Searching...
+                                    </>
+                                ) : (
+                                    'Search'
+                                )}
+                            </button>
+                        </div>
+                    </fetcher.Form>
+
+                    {isSearching ? (
+                        <div className="mb-8">
+                            <DummySearchCard />
+                        </div>
+                    ) : null}
+
+                    {fetcher.data && 'error' in fetcher.data && fetcher.data.error && (
+                        <div className="alert alert-error mb-8">
+                            <span>{fetcher.data.error}</span>
                         </div>
                     )}
+
+                    {isLoadingPreviousSearches ? (
+                        <div className="flex justify-center items-center h-32">
+                            <Spinner size="lg" />
+                        </div>
+                    ) : previousSearchesFetcher.data ? (
+                        <>
+                            <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                {previousSearchesFetcher.data.previousSearches.map((search) => (
+                                    <PreviousSearchCard
+                                        key={search.id}
+                                        search={search}
+                                    />
+                                ))}
+                            </div>
+                            {previousSearchesFetcher.data.totalPages > 1 && (
+                                <div className="flex justify-center mt-4">
+                                    <div className="btn-group space-x-2">
+                                        {Array.from({ length: previousSearchesFetcher.data.totalPages }, (_, i) => i + 1).map((page) => (
+                                            <button
+                                                key={page}
+                                                className={`btn ${page === currentPage ? 'btn-active' : ''}`}
+                                                onClick={() => handlePageChange(page)}
+                                            >
+                                                {page}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    ) : null}
                 </>
             ) : (
-                <div className="text-center py-4">
-                    {previousSearchesFetcher.state === 'loading' ? (
-                        <Spinner size="lg" />
-                    ) : previousSearchesFetcher.data === undefined ? (
-                        'No previous searches found.'
-                    ) : (
-                        'Error loading previous searches. Please try again.'
-                    )}
-                </div>
-            )}
-
-            {selectedSearch && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div ref={modalRef} className="bg-base-100 p-6 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fade-in-scale">
-                        <Suspense fallback={<div>Loading search details...</div>}>
-                            <SearchDetails
-                                videoTitle={selectedSearch.video_title}
-                                videoUrl={selectedSearch.video_url}
-                                thumbnailUrl={selectedSearch.thumbnail_url}
-                                painPoints={selectedSearch.pain_points}
-                                discussedTopics={selectedSearch.discussed_topics}
-                                onClose={() => setSelectedSearch(null)}
-                                onDelete={() => handleDelete(selectedSearch.id)}
-                            />
-                        </Suspense>
-                    </div>
-                </div>
+                <Outlet />
             )}
         </div>
     );
 }
+
+type FetcherData = {
+    painPoints?: Array<{ topic: string; description: string }>;
+    discussedTopics?: Array<{ topic: string; description: string }>;
+    error?: string;
+    videoTitle?: string;
+    videoUrl?: string;
+    thumbnailUrl?: string | null;
+};
 

@@ -36,7 +36,7 @@ export async function loadComments(videoUrl: string) {
         // Fetch comments
         let comments: string[] = [];
         let nextPageToken: string | undefined;
-        const maxComments = 500; // Increase this number to fetch more comments
+        const maxComments = 400; // Increase this number to fetch more comments
 
         do {
             const response = await youtube.commentThreads.list({

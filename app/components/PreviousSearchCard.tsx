@@ -1,3 +1,5 @@
+import { Link } from "@remix-run/react";
+
 type PreviousSearch = {
     id: string;
     video_url: string;
@@ -9,14 +11,13 @@ type PreviousSearch = {
 
 type PreviousSearchCardProps = {
     search: PreviousSearch;
-    onClick: () => void;
 };
 
-export function PreviousSearchCard({ search, onClick }: PreviousSearchCardProps) {
+export function PreviousSearchCard({ search }: PreviousSearchCardProps) {
     return (
-        <button
+        <Link
+            to={`/dashboard/search/${search.id}`}
             className="bg-base-200 p-4 rounded-lg shadow-md cursor-pointer hover:bg-base-300 transition-colors text-left w-full flex items-center"
-            onClick={onClick}
         >
             {search.thumbnail_url && (
                 <img
@@ -28,6 +29,6 @@ export function PreviousSearchCard({ search, onClick }: PreviousSearchCardProps)
             <div>
                 <p className="font-semibold mb-1">{search.video_title}</p>
             </div>
-        </button>
+        </Link>
     );
 }

@@ -4,10 +4,9 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
   isRouteErrorResponse,
   useRouteError,
-  useNavigation,
+  useLoaderData,
 } from "@remix-run/react";
 import "./tailwind.css";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
@@ -15,13 +14,15 @@ import Nav from "./components/Nav";
 import { sb } from "./api/sb";
 import "./styles/tailwind.css";
 import "./styles/transitions.css";
-import LoadingIndicator from "./components/LoadingIndicator";
-import { TransitionWrapper } from "./components/TransitionWrapper";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const env = {
-    SUPABASE_URL: process.env.SUPABASE_URL!,
-    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY!
+    SUPABASE_URL: process.env.SUPABASE_URL ?? '',
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ?? ''
+  }
+
+  if (!env.SUPABASE_URL || !env.SUPABASE_ANON_KEY) {
+    throw new Error("Missing Supabase environment variables");
   }
 
   const headers = new Headers()
@@ -58,7 +59,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   }
 }
 
-function Document({ children }: { children: React.ReactNode }) {
+export default function App() {
+  const { env, user, profile, avatarUrl } = useLoaderData<typeof loader>();
+
   return (
     <html lang="en" data-theme="mytheme">
       <head>
@@ -68,7 +71,8 @@ function Document({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="bg-base-100 text-base-content">
-        {children}
+        <Nav env={env} user={user} profile={profile} avatarUrl={avatarUrl} />
+        <Outlet />
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -84,26 +88,19 @@ export function ErrorBoundary() {
   }
 
   return (
-    <Document>
-      <h1>Something went wrong</h1>
-      <p>{isRouteErrorResponse(error) ? error.data : error instanceof Error ? error.message : String(error)}</p>
-    </Document>
+    <html lang="en" data-theme="mytheme">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body className="bg-base-100 text-base-content">
+        <h1>Something went wrong</h1>
+        <p>{isRouteErrorResponse(error) ? error.data : error instanceof Error ? error.message : String(error)}</p>
+        <Scripts />
+      </body>
+    </html>
   );
 }
 
-export default function App() {
-  const { env, user, profile, avatarUrl } = useLoaderData<typeof loader>();
-  const navigation = useNavigation();
-
-  return (
-    <Document>
-      {navigation.state !== "idle" && <LoadingIndicator />}
-      <Nav env={env} user={user} profile={profile} avatarUrl={avatarUrl} />
-      <TransitionWrapper>
-        <main className="content-container">
-          <Outlet />
-        </main>
-      </TransitionWrapper>
-    </Document>
-  );
-}

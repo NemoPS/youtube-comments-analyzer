@@ -4,8 +4,6 @@ export type SearchDetailsProps = {
     thumbnailUrl: string | null;
     painPoints: Array<{ topic: string; description: string }>;
     discussedTopics: Array<{ topic: string; description: string }>;
-    onClose?: () => void;
-    onDelete?: () => void;
 };
 
 export default function SearchDetails({
@@ -14,8 +12,6 @@ export default function SearchDetails({
     thumbnailUrl,
     painPoints,
     discussedTopics,
-    onClose,
-    onDelete
 }: SearchDetailsProps) {
     return (
         <div className="bg-base-200 rounded-lg p-6">
@@ -57,18 +53,6 @@ export default function SearchDetails({
                     </ul>
                 </div>
             </div>
-            {onClose && (
-                <div className="mt-4 flex justify-end space-x-2">
-                    <button onClick={onClose} className="btn btn-ghost">
-                        Close
-                    </button>
-                    {onDelete && (
-                        <button onClick={onDelete} className="btn btn-error">
-                            Delete
-                        </button>
-                    )}
-                </div>
-            )}
         </div>
     );
 }
