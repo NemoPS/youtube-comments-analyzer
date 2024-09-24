@@ -38,17 +38,18 @@ export default function Index() {
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                    Unlock the Power of YouTube Comment Analysis
+                    See what your audience wants in <s className="text-error">hours</s>
+                    <span className="text-primary">minutes</span>.
                   </h1>
                   <p className="max-w-[600px] text-base-content/70 md:text-xl">
-                    Our AI-powered platform analyzes your YouTube comments to find the pain points of people and provide
-                    valuable insights, sentiment analysis, and moderation tools to help you better understand your
-                    audience and improve your content.
+                    Our AI rapidly analyzes comments,
+                    uncovering insights that take days manually. While others sift, you'll create content that
+                    resonates, addressing audience needs and growing your channel faster.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Button variant="primary">
-                    <Link to="/dashboard">Get Started</Link>
+                    <Link to="/dashboard">Get Started Now</Link>
                   </Button>
                   <Button variant="secondary">
                     <Link to="#features">Learn More</Link>
@@ -65,47 +66,36 @@ export default function Index() {
             </div>
           </div>
         </section>
-        <section id="features" className="w-full py-12 md:py-24 lg:py-32 bg-base-200">
+        <section id="features" className="w-full py-8 md:py-16 lg:py-24 bg-base-200">
           <div className="container mx-auto px-4 md:px-6">
-            <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-              <Card>
-                <div className="flex flex-col items-start space-y-4">
-                  <svg className="h-12 w-12 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                  <h3 className="text-2xl font-bold">Sentiment Analysis</h3>
-                  <p className="text-base-content/70">
-                    Understand the sentiment of your YouTube comments with our advanced AI-powered analysis. Identify
-                    positive, negative, and neutral sentiments to better engage with your audience and find the pain
-                    points they are experiencing.
-                  </p>
-                </div>
-              </Card>
-              <Card>
-                <div className="flex flex-col items-start space-y-4">
-                  <svg className="h-12 w-12 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                  </svg>
-                  <h3 className="text-2xl font-bold">Topic Clustering</h3>
-                  <p className="text-base-content/70">
-                    Discover the most discussed topics in your YouTube comments and gain valuable insights to inform your
-                    content strategy and address the pain points of your audience.
-                  </p>
-                </div>
-              </Card>
-              <Card>
-                <div className="flex flex-col items-start space-y-4">
-                  <svg className="h-12 w-12 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-                  <h3 className="text-2xl font-bold">Trend Analysis</h3>
-                  <p className="text-base-content/70">
-                    Identify emerging trends and patterns in your YouTube comments over time. Gain valuable
-                    insights into shifting audience interests and concerns to stay ahead of the curve and
-                    address evolving pain points in your content strategy.
-                  </p>
-                </div>
-              </Card>
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="flex flex-col items-start space-y-4">
+                <svg className="h-12 w-12 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <h3 className="text-2xl font-bold">Pain Point Analysis</h3>
+                <p className="text-base-content/70">
+                  Uncover the key pain points expressed in YouTube comments with our AI-powered analysis. Identify what viewers are struggling with or want to see improved, helping you create content that directly addresses their needs.
+                </p>
+              </div>
+              <div className="flex flex-col items-start space-y-4">
+                <svg className="h-12 w-12 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                </svg>
+                <h3 className="text-2xl font-bold">Discussion Topic Identification</h3>
+                <p className="text-base-content/70">
+                  Discover the most discussed topics in YouTube comments for any video, including those of your competitors. Gain valuable insights to inform your content strategy and stay ahead in your niche.
+                </p>
+              </div>
+              <div className="flex flex-col items-start space-y-4">
+                <svg className="h-12 w-12 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                <h3 className="text-2xl font-bold">Comprehensive Comment Analysis</h3>
+                <p className="text-base-content/70">
+                  Get a deep understanding of viewer feedback by analyzing comments on any YouTube video. Identify patterns, concerns, and suggestions to create content that resonates with your target audience and addresses their specific needs.
+                </p>
+              </div>
             </div>
           </div>
         </section>
