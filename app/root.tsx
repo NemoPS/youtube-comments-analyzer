@@ -85,9 +85,11 @@ export default function App() {
           }}
         />
         <Nav env={env} user={user} profile={profile} avatarUrl={avatarUrl} />
-        <TransitionWrapper>
-          <Outlet />
-        </TransitionWrapper>
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl"> {/* Updated this line */}
+          <TransitionWrapper>
+            <Outlet />
+          </TransitionWrapper>
+        </main>
         <ScrollRestoration />
         <Scripts />
       </body>

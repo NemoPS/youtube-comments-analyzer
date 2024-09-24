@@ -298,8 +298,7 @@ export default function Dashboard() {
                 <Toaster />
                 {isMainDashboard && (
                     <>
-                        <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-                        <p className="mb-4">Welcome, {user.email}</p>
+                        <h1 className="text-3xl font-bold mb-6">Analyze a new video</h1>
                     </>
                 )}
 

@@ -61,9 +61,9 @@ export default function SingleSearchPage() {
     const { search } = data;
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="flex justify-end mb-6">
-                <Link to="/dashboard" className="btn btn-ghost">← Back to Dashboard</Link>
+        <div className="container mx-auto px-4">
+            <div className="flex justify-end mb-1">
+                <Link to="/dashboard" className="btn btn-sm btn-ghost">← Back</Link>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
                 <div className="md:col-span-1">
