@@ -18,7 +18,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
     const { data: previousSearches, error, count } = await supabase
         .from('youtube_searches')
-        .select('id, video_url, video_title, thumbnail_url, pain_points, discussed_topics', { count: 'exact' })
+        .select('id, video_title, thumbnail_url', { count: 'exact' })
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .range((page - 1) * pageSize, page * pageSize - 1);
