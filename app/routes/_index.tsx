@@ -4,6 +4,7 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { sb } from "~/api/sb";
 import { Button } from "~/components/Button";
 import { Card } from "~/components/Card";
+import { useEffect, useRef } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -27,19 +28,45 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 }
 
 export default function Index() {
-  // Remove the following line as it's not being used
-  // const { headers } = useLoaderData<typeof loader>();
+  const parallaxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (parallaxRef.current) {
+        const scrollPosition = window.pageYOffset;
+        parallaxRef.current.style.transform = `translateY(${scrollPosition * 0.1}px)`;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32">
+    <div className="flex flex-col min-h-screen relative overflow-hidden">
+      <div
+        ref={parallaxRef}
+        className="absolute inset-0 opacity-20 pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(135deg, transparent 0%, transparent 35%, rgba(59, 130, 246, 0.2) 40%, rgba(59, 130, 246, 0.4) 50%, rgba(59, 130, 246, 0.2) 60%, transparent 65%, transparent 100%),
+            url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(255 255 255 / 0.05)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e")
+          `,
+          backgroundSize: '100% 100%, 32px 32px',
+          backgroundPosition: '0% 0%, 0% 0%',
+        }}
+      ></div>
+      <main className="flex-1 relative z-10">
+        <section className="w-full py-12 md:py-24">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                    See what your audience wants in <s className="text-error">hours</s> <span className="text-primary">minutes</span>.
+                    See what your audience wants in <s className="text-error">hours</s>    <span className="text-primary">minutes</span>.
                   </h1>
                   <p className="max-w-[600px] text-base-content/70 md:text-xl">
                     Our AI rapidly analyzes comments,
@@ -66,7 +93,7 @@ export default function Index() {
             </div>
           </div>
         </section>
-        <section id="features" className="w-full py-12  bg-base-200">
+        <section id="features" className="w-full py-12  bg-base-200/50 shadow-top-light">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
               <div className="flex flex-col items-center space-y-4">
@@ -145,7 +172,7 @@ export default function Index() {
           </div>
         </section>
       </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-base-300">
+      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-base-300 relative z-10">
         <p className="text-xs text-base-content/70">&copy; 2024 InsighTube. All rights reserved.</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link to="#" className="text-xs hover:underline underline-offset-4">
