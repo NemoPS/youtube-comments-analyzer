@@ -137,7 +137,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
                 video_url: youtubeUrl,
                 video_title: title,
                 thumbnail_url: thumbnailUrl,
-                pain_points: gpt
+                pain_points: gpt.painPoints,
+                discussed_topics: gpt.discussedTopics
             });
 
         if (videoError) {
@@ -156,7 +157,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
             return json({ error: "Failed to deduct credits" }, { status: 500 });
         }
 
-        return json({ painPoints: gpt, videoTitle: title, videoUrl: youtubeUrl, thumbnailUrl });
+        return json({
+            painPoints: gpt.painPoints,
+            discussedTopics: gpt.discussedTopics,
+            videoTitle: title,
+            videoUrl: youtubeUrl,
+            thumbnailUrl
+        });
     } catch (error) {
         console.error("Error processing YouTube data:", error);
         return json({ error: "Failed to process YouTube data" }, { status: 500 });
@@ -171,7 +178,8 @@ export default function Dashboard() {
             video_url: string;
             video_title: string;
             thumbnail_url: string | null;
-            pain_points: string[];
+            pain_points: Array<{ topic: string; description: string }>;
+            discussed_topics: Array<{ topic: string; description: string }>;
         }[];
         totalPages: number;
         currentPage: number;
@@ -181,7 +189,8 @@ export default function Dashboard() {
     const revalidator = useRevalidator();
     const navigation = useNavigation();
     const fetcher = useFetcher<{
-        painPoints?: string[];
+        painPoints?: Array<{ topic: string; description: string }>;
+        discussedTopics?: Array<{ topic: string; description: string }>;
         error?: string;
         videoTitle?: string;
         videoUrl?: string;
@@ -192,7 +201,8 @@ export default function Dashboard() {
         video_title: string;
         video_url: string;
         thumbnail_url: string | null;
-        pain_points: string[];
+        pain_points: Array<{ topic: string; description: string }>;
+        discussed_topics: Array<{ topic: string; description: string }>;
     } | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
     const [isSearching, setIsSearching] = useState(false);
@@ -310,6 +320,7 @@ export default function Dashboard() {
                                 videoUrl={fetcher.data.videoUrl || ""}
                                 thumbnailUrl={fetcher.data.thumbnailUrl || null}
                                 painPoints={fetcher.data.painPoints}
+                                discussedTopics={fetcher.data.discussedTopics || []}
                             />
                         </Suspense>
                     </div>
@@ -334,7 +345,14 @@ export default function Dashboard() {
                             <PreviousSearchCard
                                 key={search.id}
                                 search={search}
-                                onClick={() => setSelectedSearch(search)}
+                                onClick={() => setSelectedSearch({
+                                    id: search.id,
+                                    video_title: search.video_title,
+                                    video_url: search.video_url,
+                                    thumbnail_url: search.thumbnail_url,
+                                    pain_points: search.pain_points,
+                                    discussed_topics: search.discussed_topics
+                                })}
                             />
                         ))}
                     </div>
@@ -375,6 +393,7 @@ export default function Dashboard() {
                                 videoUrl={selectedSearch.video_url}
                                 thumbnailUrl={selectedSearch.thumbnail_url}
                                 painPoints={selectedSearch.pain_points}
+                                discussedTopics={selectedSearch.discussed_topics}
                                 onClose={() => setSelectedSearch(null)}
                                 onDelete={() => handleDelete(selectedSearch.id)}
                             />

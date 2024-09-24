@@ -34,17 +34,31 @@ export async function loadComments(videoUrl: string) {
         const videoTitle = videoResponse.data.items?.[0]?.snippet?.title || 'Unknown Title';
 
         // Fetch comments
-        const response = await youtube.commentThreads.list({
-            part: ['snippet'],
-            videoId: videoId,
-            maxResults: 100
-        });
+        let comments: string[] = [];
+        let nextPageToken: string | undefined;
+        const maxComments = 500; // Increase this number to fetch more comments
 
-        const comments = response.data.items?.map(item =>
-            item.snippet?.topLevelComment?.snippet?.textDisplay || ''
-        ) || [];
+        do {
+            const response = await youtube.commentThreads.list({
+                part: ['snippet'],
+                videoId: videoId,
+                maxResults: 100,
+                pageToken: nextPageToken
+            });
 
-        return { title: videoTitle, comments, thumbnailUrl: videoResponse.data.items?.[0]?.snippet?.thumbnails?.standard?.url || null };
+            const newComments = response.data.items?.map(item =>
+                item.snippet?.topLevelComment?.snippet?.textDisplay || ''
+            ) || [];
+
+            comments = [...comments, ...newComments];
+            nextPageToken = response.data.nextPageToken || undefined;
+        } while (nextPageToken && comments.length < maxComments);
+
+        return {
+            title: videoTitle,
+            comments,
+            thumbnailUrl: videoResponse.data.items?.[0]?.snippet?.thumbnails?.standard?.url || null
+        };
     } catch (error) {
         console.error('Error fetching YouTube data:', error);
         throw error;

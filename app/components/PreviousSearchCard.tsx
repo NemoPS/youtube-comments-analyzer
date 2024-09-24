@@ -1,9 +1,10 @@
 type PreviousSearch = {
-    id: string; // Add this line
+    id: string;
     video_url: string;
     video_title: string;
     thumbnail_url: string | null;
-    pain_points: string[];
+    pain_points: Array<{ topic: string; description: string }>;
+    discussed_topics: Array<{ topic: string; description: string }>;
 };
 
 type PreviousSearchCardProps = {

@@ -2,12 +2,21 @@ export type SearchDetailsProps = {
     videoTitle: string;
     videoUrl: string;
     thumbnailUrl: string | null;
-    painPoints: string[];
+    painPoints: Array<{ topic: string; description: string }>;
+    discussedTopics: Array<{ topic: string; description: string }>;
     onClose?: () => void;
-    onDelete?: () => void; // Add this line
+    onDelete?: () => void;
 };
 
-export default function SearchDetails({ videoTitle, videoUrl, thumbnailUrl, painPoints, onClose, onDelete }: SearchDetailsProps) {
+export default function SearchDetails({
+    videoTitle,
+    videoUrl,
+    thumbnailUrl,
+    painPoints,
+    discussedTopics,
+    onClose,
+    onDelete
+}: SearchDetailsProps) {
     return (
         <div className="bg-base-200 rounded-lg p-6">
             <div className="flex flex-col md:flex-row md:space-x-6">
@@ -30,10 +39,20 @@ export default function SearchDetails({ videoTitle, videoUrl, thumbnailUrl, pain
                     </a>
                 </div>
                 <div className="md:w-1/2">
-                    <h4 className="text-lg font-semibold mb-2">Pain Points:</h4>
-                    <ul className="list-disc pl-5 space-y-2">
+                    <h4 className="text-lg font-semibold mb-2">Top Pain Points:</h4>
+                    <ul className="list-disc pl-5 space-y-2 mb-4">
                         {painPoints.map((point, index) => (
-                            <li key={index}>{point}</li>
+                            <li key={index}>
+                                <strong>{point.topic}:</strong> {point.description}
+                            </li>
+                        ))}
+                    </ul>
+                    <h4 className="text-lg font-semibold mb-2">Most Discussed Topics:</h4>
+                    <ul className="list-disc pl-5 space-y-2">
+                        {discussedTopics.map((topic, index) => (
+                            <li key={index}>
+                                <strong>{topic.topic}:</strong> {topic.description}
+                            </li>
                         ))}
                     </ul>
                 </div>
