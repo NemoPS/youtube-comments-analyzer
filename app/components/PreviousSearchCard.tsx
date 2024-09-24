@@ -17,17 +17,19 @@ export function PreviousSearchCard({ search }: PreviousSearchCardProps) {
     return (
         <Link
             to={`/dashboard/search/${search.id}`}
-            className="bg-base-200 p-4 rounded-lg shadow-md cursor-pointer hover:bg-base-300 transition-colors text-left w-full flex items-center"
+            className="bg-base-200 rounded-lg shadow-md cursor-pointer hover:bg-base-300 transition-colors text-left w-full flex flex-col overflow-hidden"
         >
             {search.thumbnail_url && (
-                <img
-                    src={search.thumbnail_url}
-                    alt={search.video_title}
-                    className="w-16 h-16 object-cover rounded-md mr-4"
-                />
+                <div className="w-full pb-[56.25%] relative">
+                    <img
+                        src={search.thumbnail_url}
+                        alt={search.video_title}
+                        className="absolute top-0 left-0 w-full h-full object-cover"
+                    />
+                </div>
             )}
-            <div>
-                <p className="font-semibold mb-1">{search.video_title}</p>
+            <div className="p-4">
+                <p className="font-semibold text-sm line-clamp-2">{search.video_title}</p>
             </div>
         </Link>
     );
