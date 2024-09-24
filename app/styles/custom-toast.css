@@ -14,15 +14,26 @@
 
 .custom-toast {
   animation: toast-pop 0.3s ease-out forwards;
-  background-color: #374151; /* Tailwind's gray-700 */
-  color: white;
+  background-color: #1F2937; /* Tailwind's gray-800, slightly lighter than base-100 for contrast */
+  color: #FFFFFF; /* White text for maximum readability */
   padding: 16px;
   border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   gap: 8px;
-  border-left: 4px solid #ef4444; /* Tailwind's red-500 for a subtle error indication */
+}
+
+.custom-toast-error {
+  border-left: 4px solid #F87272; /* Your error color */
+}
+
+.custom-toast-success {
+  border-left: 4px solid #36D399; /* Your success color */
+}
+
+.custom-toast-info {
+  border-left: 4px solid #0EA5E9; /* Your primary color */
 }
 
 .custom-toast > div {

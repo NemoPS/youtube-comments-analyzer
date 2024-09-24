@@ -76,11 +76,7 @@ export default function App() {
         <Toaster
           position="top-center"
           toastOptions={{
-            className: '',
-            style: {
-              background: 'transparent',
-              boxShadow: 'none',
-            },
+            // Remove any style overrides here
           }}
         />
         <Nav env={env} user={user} profile={profile} avatarUrl={avatarUrl} />

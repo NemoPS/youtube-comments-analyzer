@@ -8,7 +8,7 @@ import { PreviousSearchCard } from "~/components/PreviousSearchCard";
 import { loadComments } from "~/utils/ytfetch";
 import { getFromGPT } from "~/utils/gpt";
 import { Spinner } from "~/components/Spinner";
-import { Toaster, toast } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import { showCustomToast } from '~/components/CustomToast';
 
 type User = {
@@ -215,8 +215,6 @@ export default function Dashboard() {
     const fetcher = useFetcher<FetcherData>();
 
     const [isSearching, setIsSearching] = useState(false);
-    const [isLoadingPreviousSearches, setIsLoadingPreviousSearches] = useState(true);
-
     const [youtubeUrl, setYoutubeUrl] = useState("");
     const [urlError, setUrlError] = useState("");
 
@@ -270,9 +268,11 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (previousSearchesFetcher.state === "loading" && !isInitialLoad) {
-            setIsLoadingPreviousSearches(true);
+            // Remove the unused state setter
+            // setIsLoadingPreviousSearches(true);
         } else if (previousSearchesFetcher.state === "idle") {
-            setIsLoadingPreviousSearches(false);
+            // Remove the unused state setter
+            // setIsLoadingPreviousSearches(false);
         }
     }, [previousSearchesFetcher.state, isInitialLoad]);
 
