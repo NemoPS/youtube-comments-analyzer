@@ -219,6 +219,7 @@ export default function Dashboard() {
     const [urlError, setUrlError] = useState("");
 
     const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [isLoadingPreviousSearches, setIsLoadingPreviousSearches] = useState(true);
 
     // Load previous searches only on initial component mount
     useEffect(() => {
@@ -256,6 +257,14 @@ export default function Dashboard() {
     };
 
     useEffect(() => {
+        if (previousSearchesFetcher.state === "loading" && !isSearching) {
+            setIsLoadingPreviousSearches(true);
+        } else if (previousSearchesFetcher.state === "idle") {
+            setIsLoadingPreviousSearches(false);
+        }
+    }, [previousSearchesFetcher.state, isSearching]);
+
+    useEffect(() => {
         if (fetcher.state === "idle" && fetcher.data) {
             setIsSearching(false);
             if ('error' in fetcher.data && fetcher.data.error) {
@@ -276,16 +285,6 @@ export default function Dashboard() {
             }
         }
     }, [fetcher.state, fetcher.data, currentPage]);
-
-    useEffect(() => {
-        if (previousSearchesFetcher.state === "loading" && !isInitialLoad) {
-            // Remove the unused state setter
-            // setIsLoadingPreviousSearches(true);
-        } else if (previousSearchesFetcher.state === "idle") {
-            // Remove the unused state setter
-            // setIsLoadingPreviousSearches(false);
-        }
-    }, [previousSearchesFetcher.state, isInitialLoad]);
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
@@ -342,39 +341,44 @@ export default function Dashboard() {
                         </div>
                     </fetcher.Form>
 
-                    {isInitialLoad ? (
-                        <div className="flex justify-center items-center h-32">
-                            <Spinner size="lg" />
-                        </div>
-                    ) : previousSearchesFetcher.data ? (
-                        <>
-                            <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {isSearching && <DummySearchCard />}
-                                {previousSearchesFetcher.data.previousSearches.map((search) => (
-                                    <PreviousSearchCard
-                                        key={search.id}
-                                        search={search}
-                                    />
-                                ))}
+                    <div className="transition-opacity duration-300 ease-in-out">
+                        {isLoadingPreviousSearches && !isSearching ? (
+                            <div className="flex justify-center items-center h-64">
+                                <Spinner size="lg" />
                             </div>
-                            {previousSearchesFetcher.data.totalPages > 1 && (
-                                <div className="flex justify-center mt-4">
-                                    <div className="btn-group space-x-2">
-                                        {Array.from({ length: previousSearchesFetcher.data.totalPages }, (_, i) => i + 1).map((page) => (
-                                            <button
-                                                key={page}
-                                                className={`btn ${page === currentPage ? 'btn-active' : ''}`}
-                                                onClick={() => handlePageChange(page)}
-                                            >
-                                                {page}
-                                            </button>
-                                        ))}
-                                    </div>
+                        ) : previousSearchesFetcher.data ? (
+                            <div className={`${isLoadingPreviousSearches ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
+                                <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {isSearching && <DummySearchCard />}
+                                    {previousSearchesFetcher.data.previousSearches.map((search, index) => (
+                                        <div
+                                            key={search.id}
+                                            className="opacity-0 animate-fade-in"
+                                            style={{ animationDelay: `${index * 50}ms` }}
+                                        >
+                                            <PreviousSearchCard search={search} />
+                                        </div>
+                                    ))}
                                 </div>
-                            )}
-                        </>
-                    ) : null}
+                                {previousSearchesFetcher.data.totalPages > 1 && (
+                                    <div className="flex justify-center mt-4">
+                                        <div className="btn-group space-x-2">
+                                            {Array.from({ length: previousSearchesFetcher.data.totalPages }, (_, i) => i + 1).map((page) => (
+                                                <button
+                                                    key={page}
+                                                    className={`btn ${page === currentPage ? 'btn-active' : ''}`}
+                                                    onClick={() => handlePageChange(page)}
+                                                >
+                                                    {page}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : null}
+                    </div>
                 </>
             ) : (
                 <Outlet />
