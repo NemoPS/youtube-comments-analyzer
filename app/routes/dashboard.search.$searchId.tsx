@@ -48,9 +48,9 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 };
 
 export default function SingleSearchPage() {
-    const data = useLoaderData<{ search: SearchResult }>();
+    const data = useLoaderData<{ search: SearchResult | null; error?: string }>();
 
-    if ('error' in data) {
+    if ('error' in data && data.error) {
         return <div className="text-error">{data.error}</div>;
     }
 
@@ -62,12 +62,12 @@ export default function SingleSearchPage() {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">{search.video_title}</h1>
+            <div className="flex justify-end mb-6">
                 <Link to="/dashboard" className="btn btn-ghost">← Back to Dashboard</Link>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
-                <div className="md:col-span-2">
+                <div className="md:col-span-1">
+                    <h1 className="text-2xl font-bold mb-4">{search.video_title}</h1>
                     <div className="rounded-lg overflow-hidden mb-4">
                         <img
                             src={search.thumbnail_url || "/placeholder.svg"}
@@ -83,26 +83,30 @@ export default function SingleSearchPage() {
                     >
                         View on YouTube
                     </a>
-                    <h3 className="text-xl font-bold mb-4">Discussed Topics</h3>
-                    <div className="grid gap-4">
-                        {search.discussed_topics.map((topic, index) => (
-                            <div key={index} className="bg-base-200 rounded-lg p-4">
-                                <h4 className="text-lg font-bold mb-2">{topic.topic}</h4>
-                                <p className="text-base-content/70">{topic.description}</p>
-                            </div>
-                        ))}
-                    </div>
                 </div>
-                <div>
-                    <h3 className="text-xl font-bold mb-4">Top Pain Points</h3>
-                    <div className="grid gap-4">
+                <div className="md:col-span-2">
+                    <h3 className="text-xl font-bold mb-4 flex items-center">
+                        Top Pain Points <span className="ml-2" role="img" aria-label="Pain emoji">😣</span>
+                    </h3>
+                    <ul className="space-y-4">
                         {search.pain_points.map((point, index) => (
-                            <div key={index} className="bg-base-200 rounded-lg p-4">
-                                <h4 className="text-lg font-bold mb-2">{point.topic}</h4>
+                            <li key={index}>
+                                <h4 className="text-lg font-bold">{point.topic}</h4>
                                 <p className="text-base-content/70">{point.description}</p>
-                            </div>
+                            </li>
                         ))}
-                    </div>
+                    </ul>
+                </div>
+            </div>
+            <div className="mt-8">
+                <h3 className="text-xl font-bold mb-4">Discussed Topics</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {search.discussed_topics.map((topic, index) => (
+                        <div key={index} className="bg-base-200 rounded-lg p-4">
+                            <h4 className="text-lg font-bold mb-2">{topic.topic}</h4>
+                            <p className="text-base-content/70">{topic.description}</p>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
