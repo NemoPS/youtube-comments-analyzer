@@ -7,6 +7,7 @@ import {
   isRouteErrorResponse,
   useRouteError,
   useLoaderData,
+  useNavigation,
 } from "@remix-run/react";
 import "./tailwind.css";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
@@ -16,6 +17,8 @@ import "./styles/tailwind.css";
 import "./styles/transitions.css";
 import { Toaster } from 'react-hot-toast';
 import "./styles/custom-toast.css";
+import { LoadingIndicator } from "./components/LoadingIndicator";
+import { TransitionWrapper } from "./components/TransitionWrapper";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const env = {
@@ -63,6 +66,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function App() {
   const { env, user, profile, avatarUrl } = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
 
   return (
     <html lang="en" data-theme="mytheme">
@@ -73,6 +77,7 @@ export default function App() {
         <Links />
       </head>
       <body className="bg-base-100 text-base-content">
+        {navigation.state !== "idle" && <LoadingIndicator />}
         <Toaster
           position="top-center"
           toastOptions={{
@@ -80,7 +85,9 @@ export default function App() {
           }}
         />
         <Nav env={env} user={user} profile={profile} avatarUrl={avatarUrl} />
-        <Outlet />
+        <TransitionWrapper>
+          <Outlet />
+        </TransitionWrapper>
         <ScrollRestoration />
         <Scripts />
       </body>

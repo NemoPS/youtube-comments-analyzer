@@ -31,12 +31,17 @@ module.exports = {
         'fade-in': {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
-        }
+        },
+        'loading-bar': {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(400%)' },
+        },
       },
       animation: {
         'fade-in-scale': 'fade-in-scale 0.3s ease-out',
         'pulse-fast': 'pulse-fast 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'fade-in': 'fade-in 0.3s ease-out forwards',
+        'loading-bar': 'loading-bar 1.5s infinite',
       },
     },
   },

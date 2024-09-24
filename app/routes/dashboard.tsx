@@ -10,6 +10,7 @@ import { getFromGPT } from "~/utils/gpt";
 import { Spinner } from "~/components/Spinner";
 import { Toaster } from 'react-hot-toast';
 import { showCustomToast } from '~/components/CustomToast';
+import { TransitionWrapper } from "~/components/TransitionWrapper";
 
 type User = {
     id: string;
@@ -292,98 +293,100 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <Toaster />
-            {isMainDashboard && (
-                <>
-                    <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-                    <p className="mb-4">Welcome, {user.email}</p>
-                </>
-            )}
+        <TransitionWrapper>
+            <div className="container mx-auto px-4 py-8">
+                <Toaster />
+                {isMainDashboard && (
+                    <>
+                        <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+                        <p className="mb-4">Welcome, {user.email}</p>
+                    </>
+                )}
 
-            {flashMessage && navigation.state === "idle" && (
-                <div className="alert alert-success mb-4">
-                    <span>{flashMessage}</span>
-                </div>
-            )}
-
-            {isMainDashboard ? (
-                <>
-                    <fetcher.Form method="post" className="mb-8" onSubmit={handleSubmit}>
-                        <div className="flex flex-col gap-2">
-                            <div className="flex gap-2">
-                                <input
-                                    type="text"
-                                    name="youtubeUrl"
-                                    value={youtubeUrl}
-                                    onChange={handleUrlChange}
-                                    placeholder="Enter YouTube URL"
-                                    className={`input input-bordered flex-grow ${urlError ? 'input-error' : ''}`}
-                                    required
-                                    disabled={isSearching}
-                                />
-                                <button
-                                    type="submit"
-                                    className={`btn btn-primary ${isSearching ? 'btn-disabled' : ''}`}
-                                    disabled={isSearching || !!urlError}
-                                >
-                                    {isSearching ? (
-                                        <>
-                                            <span className="loading loading-spinner"></span>
-                                            Searching...
-                                        </>
-                                    ) : (
-                                        'Search'
-                                    )}
-                                </button>
-                            </div>
-                            {urlError && <p className="text-error text-sm">{urlError}</p>}
-                        </div>
-                    </fetcher.Form>
-
-                    <div className="transition-opacity duration-300 ease-in-out">
-                        {isLoadingPreviousSearches && !isSearching ? (
-                            <div className="flex justify-center items-center h-64">
-                                <Spinner size="lg" />
-                            </div>
-                        ) : previousSearchesFetcher.data ? (
-                            <div className={`${isLoadingPreviousSearches ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
-                                <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                    {isSearching && <DummySearchCard />}
-                                    {previousSearchesFetcher.data.previousSearches.map((search, index) => (
-                                        <div
-                                            key={search.id}
-                                            className="opacity-0 animate-fade-in"
-                                            style={{ animationDelay: `${index * 50}ms` }}
-                                        >
-                                            <PreviousSearchCard search={search} />
-                                        </div>
-                                    ))}
-                                </div>
-                                {previousSearchesFetcher.data.totalPages > 1 && (
-                                    <div className="flex justify-center mt-4">
-                                        <div className="btn-group space-x-2">
-                                            {Array.from({ length: previousSearchesFetcher.data.totalPages }, (_, i) => i + 1).map((page) => (
-                                                <button
-                                                    key={page}
-                                                    className={`btn ${page === currentPage ? 'btn-active' : ''}`}
-                                                    onClick={() => handlePageChange(page)}
-                                                >
-                                                    {page}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        ) : null}
+                {flashMessage && navigation.state === "idle" && (
+                    <div className="alert alert-success mb-4">
+                        <span>{flashMessage}</span>
                     </div>
-                </>
-            ) : (
-                <Outlet />
-            )}
-        </div>
+                )}
+
+                {isMainDashboard ? (
+                    <>
+                        <fetcher.Form method="post" className="mb-8" onSubmit={handleSubmit}>
+                            <div className="flex flex-col gap-2">
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        name="youtubeUrl"
+                                        value={youtubeUrl}
+                                        onChange={handleUrlChange}
+                                        placeholder="Enter YouTube URL"
+                                        className={`input input-bordered flex-grow ${urlError ? 'input-error' : ''}`}
+                                        required
+                                        disabled={isSearching}
+                                    />
+                                    <button
+                                        type="submit"
+                                        className={`btn btn-primary ${isSearching ? 'btn-disabled' : ''}`}
+                                        disabled={isSearching || !!urlError}
+                                    >
+                                        {isSearching ? (
+                                            <>
+                                                <span className="loading loading-spinner"></span>
+                                                Searching...
+                                            </>
+                                        ) : (
+                                            'Search'
+                                        )}
+                                    </button>
+                                </div>
+                                {urlError && <p className="text-error text-sm">{urlError}</p>}
+                            </div>
+                        </fetcher.Form>
+
+                        <div className="transition-opacity duration-300 ease-in-out">
+                            {isLoadingPreviousSearches && !isSearching ? (
+                                <div className="flex justify-center items-center h-64">
+                                    <Spinner size="lg" />
+                                </div>
+                            ) : previousSearchesFetcher.data ? (
+                                <div className={`${isLoadingPreviousSearches ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
+                                    <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                        {isSearching && <DummySearchCard />}
+                                        {previousSearchesFetcher.data.previousSearches.map((search, index) => (
+                                            <div
+                                                key={search.id}
+                                                className="opacity-0 animate-fade-in"
+                                                style={{ animationDelay: `${index * 50}ms` }}
+                                            >
+                                                <PreviousSearchCard search={search} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {previousSearchesFetcher.data.totalPages > 1 && (
+                                        <div className="flex justify-center mt-4">
+                                            <div className="btn-group space-x-2">
+                                                {Array.from({ length: previousSearchesFetcher.data.totalPages }, (_, i) => i + 1).map((page) => (
+                                                    <button
+                                                        key={page}
+                                                        className={`btn ${page === currentPage ? 'btn-active' : ''}`}
+                                                        onClick={() => handlePageChange(page)}
+                                                    >
+                                                        {page}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : null}
+                        </div>
+                    </>
+                ) : (
+                    <Outlet />
+                )}
+            </div>
+        </TransitionWrapper>
     );
 }
 
