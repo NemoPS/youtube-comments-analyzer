@@ -44,7 +44,7 @@ export default function Nav({ env, user, profile, avatarUrl }: NavProps) {
 
     return <div className="navbar bg-base-100">
         <div className="flex-1">
-            <Link to="/" className="btn btn-ghost text-xl">daisyUI</Link>
+            <Link to="/" className="btn btn-ghost text-xl">InsighTube</Link>
         </div>
         <div className="flex-none">
             {user && profile ? (

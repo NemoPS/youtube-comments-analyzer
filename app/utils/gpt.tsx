@@ -6,7 +6,7 @@ export async function getFromGPT(comments: string) {
     const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
-            { role: "system", content: "You are a helpful assistant, very good at understanding people's problems with art. You will only give me an array of 3 items, in JSON format. Do not name the array. Just return the JSON array. You always return ONLY the JSON array with no additional description or context. DO not return the code block, just a JSON string" },
+            { role: "system", content: "You are a helpful assistant, very good at understanding people's problems You will only give me an array of 3 items, in JSON format. Do not name the array. Just return the JSON array. You always return ONLY the JSON array with no additional description or context. DO not return the code block, just a JSON string" },
             {
                 role: "user",
                 content: "Give me a list of the 3 things people have most issues with in the following comments: " + comments,
