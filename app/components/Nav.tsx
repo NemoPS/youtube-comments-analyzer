@@ -1,7 +1,8 @@
 import { Link, useRevalidator, useLocation } from "@remix-run/react";
 import { createBrowserClient } from "@supabase/ssr";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import LoginModal from "./LoginModal";
+import { CircleStackIcon } from "@heroicons/react/24/outline"; // Import CircleStackIcon
 
 // Update the NavProps type
 type NavProps = {
@@ -27,6 +28,7 @@ export default function Nav({ env, user, profile, avatarUrl }: NavProps) {
 
     const revalidator = useRevalidator();
     const location = useLocation();
+    const [popoverOpen, setPopoverOpen] = useState(false);
 
     async function signOut() {
         const { error } = await supabase.auth.signOut();
@@ -40,6 +42,10 @@ export default function Nav({ env, user, profile, avatarUrl }: NavProps) {
 
     function openModal() {
         dialogRef.current?.showModal();
+    }
+
+    function togglePopover() {
+        setPopoverOpen(!popoverOpen);
     }
 
     return <div className="navbar bg-base-100 px-4">
@@ -60,26 +66,35 @@ export default function Nav({ env, user, profile, avatarUrl }: NavProps) {
         <div className="flex-none">
             {user && profile ? (
                 <div className="flex items-center">
-                    {avatarUrl ? (
-                        <div className="avatar">
-                            <div className="w-10 rounded-full">
-                                <img src={avatarUrl} alt="User avatar" />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="avatar placeholder">
-                            <div className="bg-neutral-focus text-neutral-content rounded-full w-10">
-                                <span className="text-xl">{user.email ? user.email.charAt(0).toUpperCase() : 'U'}</span>
-                            </div>
-                        </div>
-                    )}
-                    <p className="ml-2 mr-4">Credits: {profile.credits || 0}</p>
+                    <div className="flex items-center mr-4" title={`Credits: ${profile.credits || 0}`}>
+                        <CircleStackIcon className="w-5 h-5 mr-1" /> {/* Add CircleStackIcon */}
+                        <span className="font-semibold">{profile.credits || 0}</span>
+                    </div>
                     {location.pathname !== "/buy-credits" && (
                         <Link to="/buy-credits" className="btn btn-sm btn-outline btn-primary mr-2">
                             Buy Credits
                         </Link>
                     )}
-                    <button className="btn btn-sm" onClick={signOut}>Sign Out</button>
+                    <div className="relative">
+                        <div className="avatar cursor-pointer" onClick={togglePopover} tabIndex={0} role="button" aria-haspopup="true" aria-expanded={popoverOpen}>
+                            {avatarUrl ? (
+                                <div className="w-10 rounded-full">
+                                    <img src={avatarUrl} alt="User avatar" />
+                                </div>
+                            ) : (
+                                <div className="avatar placeholder">
+                                    <div className="bg-neutral-focus text-neutral-content rounded-full w-10">
+                                        <span className="text-xl">{user.email ? user.email.charAt(0).toUpperCase() : 'U'}</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className={`absolute right-0 mt-2 w-48 bg-base-200 border border-base-300 rounded-md shadow-lg z-10 transition ease-out duration-200 transform ${popoverOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}`}>
+                            <button className="block w-full text-left px-4 py-2 text-sm text-base-content hover:bg-base-300" onClick={signOut}>
+                                Sign Out
+                            </button>
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <button className="btn btn-sm" onClick={openModal}>
