@@ -85,7 +85,7 @@ export default function App() {
           }}
         />
         <Nav env={env} user={user} profile={profile} avatarUrl={avatarUrl} />
-        <main className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl"> {/* Updated this line */}
+        <main className="mx-auto">
           <TransitionWrapper>
             <Outlet />
           </TransitionWrapper>
