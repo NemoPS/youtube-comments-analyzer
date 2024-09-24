@@ -14,6 +14,8 @@ import Nav from "./components/Nav";
 import { sb } from "./api/sb";
 import "./styles/tailwind.css";
 import "./styles/transitions.css";
+import { Toaster } from 'react-hot-toast';
+import "./styles/custom-toast.css";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const env = {
@@ -71,6 +73,16 @@ export default function App() {
         <Links />
       </head>
       <body className="bg-base-100 text-base-content">
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            className: '',
+            style: {
+              background: 'transparent',
+              boxShadow: 'none',
+            },
+          }}
+        />
         <Nav env={env} user={user} profile={profile} avatarUrl={avatarUrl} />
         <Outlet />
         <ScrollRestoration />

@@ -8,6 +8,8 @@ import { PreviousSearchCard } from "~/components/PreviousSearchCard";
 import { loadComments } from "~/utils/ytfetch";
 import { getFromGPT } from "~/utils/gpt";
 import { Spinner } from "~/components/Spinner";
+import { Toaster, toast } from 'react-hot-toast';
+import { showCustomToast } from '~/components/CustomToast';
 
 type User = {
     id: string;
@@ -217,7 +219,6 @@ export default function Dashboard() {
 
     const [youtubeUrl, setYoutubeUrl] = useState("");
     const [urlError, setUrlError] = useState("");
-    const [showError, setShowError] = useState(false);
 
     const [isInitialLoad, setIsInitialLoad] = useState(true);
 
@@ -277,10 +278,11 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (fetcher.data && 'error' in fetcher.data && fetcher.data.error) {
-            setShowError(true);
+            showCustomToast({
+                message: fetcher.data.error,
+                type: 'error'
+            });
             setIsSearching(false);  // Ensure search state is reset on error
-            const timer = setTimeout(() => setShowError(false), 5000); // Hide error after 5 seconds
-            return () => clearTimeout(timer);
         }
     }, [fetcher.data]);
 
@@ -291,6 +293,7 @@ export default function Dashboard() {
 
     return (
         <div className="container mx-auto px-4 py-8">
+            <Toaster />
             {isMainDashboard && (
                 <>
                     <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
@@ -337,12 +340,6 @@ export default function Dashboard() {
                             {urlError && <p className="text-error text-sm">{urlError}</p>}
                         </div>
                     </fetcher.Form>
-
-                    {showError && fetcher.data && 'error' in fetcher.data && fetcher.data.error && (
-                        <div className="alert alert-error mb-8 transition-opacity duration-500 ease-in-out">
-                            <span>{fetcher.data.error}</span>
-                        </div>
-                    )}
 
                     {isInitialLoad ? (
                         <div className="flex justify-center items-center h-32">
