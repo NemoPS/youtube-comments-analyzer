@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLoaderData, useNavigation, useFetcher, Outlet, useLocation, Link } from "@remix-run/react";
+import { useLoaderData, useNavigation, useFetcher, Outlet, useLocation, Link, useSearchParams } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
 import { sb } from "~/api/sb";
@@ -43,21 +43,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         return redirect("/", { headers });
     }
 
-    // Get the flash message from the cookie
-    const cookieHeader = request.headers.get("Cookie") || "";
-    const cookies = cookieHeader.split("; ").reduce((acc, cookie) => {
-        const [key, value] = cookie.split("=");
-        acc[key] = decodeURIComponent(value);
-        return acc;
-    }, {} as Record<string, string>);
-
-    const flashMessage = cookies.flash || null;
-
-    // Clear the flash message
-    if (flashMessage) {
-        headers.append("Set-Cookie", "flash=; Max-Age=0; Path=/");
-    }
-
     // Fetch user's credits
     const { data: profile, error: profileError } = await supabase
         .from('profiles')
@@ -71,7 +56,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     }
 
     return json({
-        flashMessage,
         user,
         credits: profile.credits,
     }, { headers });
@@ -208,8 +192,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Dashboard() {
-    const { flashMessage, user, credits } = useLoaderData<typeof loader>();
+    const { user, credits } = useLoaderData<typeof loader>();
     const location = useLocation();
+    const [searchParams] = useSearchParams();
     const isMainDashboard = location.pathname === "/dashboard";
     const previousSearchesFetcher = useFetcher<{
         previousSearches: {
@@ -234,6 +219,7 @@ export default function Dashboard() {
 
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [isLoadingPreviousSearches, setIsLoadingPreviousSearches] = useState(true);
+
 
     // Load previous searches only on initial component mount
     useEffect(() => {
@@ -300,6 +286,21 @@ export default function Dashboard() {
         }
     }, [fetcher.state, fetcher.data, currentPage]);
 
+    useEffect(() => {
+        const paymentSuccess = searchParams.get('paymentSuccess');
+
+        if (paymentSuccess === 'true') {
+            showCustomToast({
+                message: "Payment successful! Your credits have been added.",
+                type: 'success'
+            });
+            // Remove the parameter from the URL without triggering a page reload
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.delete('paymentSuccess');
+            window.history.replaceState({}, document.title, newUrl.toString());
+        }
+    }, [searchParams]);
+
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
         previousSearchesFetcher.load(`/dashboard/previous-searches?page=${newPage}`);
@@ -313,12 +314,6 @@ export default function Dashboard() {
                     <>
                         <h1 className="text-3xl font-bold mb-6">Analyze a new video</h1>
                     </>
-                )}
-
-                {flashMessage && navigation.state === "idle" && (
-                    <div className="alert alert-success mb-4">
-                        <span>{flashMessage}</span>
-                    </div>
                 )}
 
                 {isMainDashboard ? (

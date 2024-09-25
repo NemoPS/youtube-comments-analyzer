@@ -2,6 +2,8 @@ import { useLoaderData, useNavigate } from "@remix-run/react";
 import { useState, useEffect, useCallback } from "react";
 import { json, LoaderFunctionArgs } from "@remix-run/node";
 import { sb } from "~/api/sb";
+import { Spinner } from "~/components/Spinner";
+import { showCustomToast } from '~/components/CustomToast';
 
 type LoaderData = {
     initialCredits: number;
@@ -51,7 +53,7 @@ export default function PendingCredits() {
                 throw new Error('Failed to check payment status');
             }
             const data = await response.json();
-            console.log("Check payment response:", data);
+            // console.log("Check payment response:", data);
 
             if (data.webhookProcessed) {
                 setStatus("success");
@@ -80,23 +82,41 @@ export default function PendingCredits() {
 
     useEffect(() => {
         if (status === "success") {
-            navigate("/dashboard/confirmation");
+            // Redirect to dashboard with a URL parameter
+            navigate("/dashboard?paymentSuccess=true");
         }
     }, [status, navigate]);
 
-    if (status === "pending") {
-        return <div>Processing your payment... This may take a few moments.</div>;
-    } else if (status === "success") {
-        return <div>Payment successful! Redirecting to confirmation page...</div>;
-    } else {
-        return (
-            <div>
-                <p>There was an error processing your payment.</p>
-                {errorMessage && <p>{errorMessage}</p>}
-                <p>Please contact support at support@tubevoice.com for assistance.</p>
-                <p>Include the following session ID in your message: {sessionId}</p>
-                <button onClick={() => navigate("/dashboard")}>Return to Dashboard</button>
-            </div>
-        );
-    }
+    return (
+        <div className="max-w-4xl mx-auto mt-12 text-center px-4">
+            {status === "pending" && (
+                <div className="space-y-8">
+                    <div className="flex justify-center">
+                        <Spinner size="lg" />
+                    </div>
+                    <p className="text-2xl">Processing your payment... This may take a few moments.</p>
+                </div>
+            )}
+            {status === "success" && (
+                <div className="space-y-6">
+                    <p className="text-2xl">Payment successful! Redirecting to confirmation page...</p>
+                </div>
+            )}
+            {status === "error" && (
+                <div className="space-y-6">
+                    <p className="text-2xl">There was an error processing your payment.</p>
+                    {errorMessage && <p className="text-error text-lg">{errorMessage}</p>}
+                    <p className="text-lg">Please contact support at support@tubevoice.com for assistance.</p>
+                    <p className="text-lg">Include the following session ID in your message:</p>
+                    <p className="font-mono bg-base-200 p-3 rounded text-lg">{sessionId}</p>
+                    <button
+                        onClick={() => navigate("/dashboard")}
+                        className="btn btn-primary btn-lg mt-6"
+                    >
+                        Return to Dashboard
+                    </button>
+                </div>
+            )}
+        </div>
+    );
 }
