@@ -5,6 +5,7 @@ import { sb } from "~/api/sb";
 import { Button } from "~/components/Button";
 import { Card } from "~/components/Card";
 import { useEffect, useRef } from "react";
+import Footer from "~/components/Footer";
 
 export const meta: MetaFunction = () => {
   return [
@@ -170,17 +171,7 @@ export default function Index() {
           </div>
         </section>
       </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-base-300 relative z-10">
-        <p className="text-xs text-base-content/70">&copy; 2024 TubeVoice. All rights reserved.</p>
-        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-          <Link to="#" className="text-xs hover:underline underline-offset-4">
-            Terms of Service
-          </Link>
-          <Link to="#" className="text-xs hover:underline underline-offset-4">
-            Privacy
-          </Link>
-        </nav>
-      </footer>
+      <Footer />
     </div>
   );
 }
