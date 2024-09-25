@@ -29,7 +29,7 @@ export const action = async ({ request }: LoaderFunctionArgs) => {
             },
         ],
         mode: "payment",
-        success_url: `${request.headers.get("origin")}/buy-credits/success`,
+        success_url: `${request.headers.get("origin")}/pending-credits?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${request.headers.get("origin")}/buy-credits?canceled=true`,
         client_reference_id: user.id,
         metadata: {

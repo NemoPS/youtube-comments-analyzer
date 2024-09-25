@@ -88,7 +88,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function BuyCredits() {
-    const { user, profile, stripePublishableKey, products } = useLoaderData<LoaderData>();
+    const { profile, stripePublishableKey, products } = useLoaderData<LoaderData>();
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
     const navigation = useNavigation();
 
@@ -216,7 +216,6 @@ export default function BuyCredits() {
             </div>
             <div className="mt-8 text-center">
                 <p className="mb-4">Current Credits: {profile?.credits || 0}</p>
-                <p>Logged in as: {user?.email}</p>
             </div>
         </div>
     );

@@ -26,13 +26,8 @@ export const action: ActionFunction = async ({ request }) => {
 
     if (event.type === 'checkout.session.completed') {
         const checkoutSession = event.data.object as Stripe.Checkout.Session;
-        // console.log("Checkout session completed:", checkoutSession);
-
         const credits = parseInt(checkoutSession.metadata?.credits || "0", 10);
         const userId = checkoutSession.client_reference_id;
-
-        console.log("Credits to add:", credits);
-        console.log("User ID:", userId);
 
         if (!userId) {
             console.error("User ID not found in session");
@@ -41,8 +36,8 @@ export const action: ActionFunction = async ({ request }) => {
 
         const supabase = sb(request, new Headers());
 
-        console.log("Calling add_credits RPC function with:", { user_id: userId, amount: credits });
-        const { data, error } = await supabase.rpc('add_credits', {
+        // Add credits to user's account
+        const { error } = await supabase.rpc('add_credits', {
             user_id: userId,
             amount: credits
         });
@@ -52,20 +47,24 @@ export const action: ActionFunction = async ({ request }) => {
             return json({ error: "Error adding credits" }, { status: 500 });
         }
 
-        console.log("Credits added successfully. Result:", data);
+        // Mark the payment as processed in the database and record the amount of credits
+        const { error: processedError } = await supabase
+            .from('processed_payments')
+            .insert({
+                session_id: checkoutSession.id,
+                processed: true,
+                credits_purchased: credits,
+                user_id: userId,
+                amount: checkoutSession.amount_total ? checkoutSession.amount_total / 100 : null // Convert cents to dollars
+            });
 
-        // Add this section to verify the credits were actually added
-        const { data: updatedUser, error: fetchError } = await supabase
-            .from('profiles')
-            .select('credits')
-            .eq('id', userId)
-            .single();
-
-        if (fetchError) {
-            console.error("Error fetching updated user credits:", fetchError);
-        } else {
-            // console.log("Updated user credits:", updatedUser?.credits);
+        if (processedError) {
+            console.error("Error marking payment as processed:", processedError);
+            return json({ error: "Failed to mark payment as processed" }, { status: 500 });
         }
+
+        console.log("Payment processed successfully");
+        return json({ success: true });
     } else if (event.type === 'payment_intent.succeeded' || event.type === 'payment_intent.created' || event.type === 'charge.updated') {
         // console.log(`Received ${event.type} event, no action needed.`);
     } else {
