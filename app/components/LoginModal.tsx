@@ -4,6 +4,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { CrossIcon } from "./icons/CrossIcon";
 import { useRevalidator } from "@remix-run/react";
 import { TwitterIcon } from "./icons/TwitterIcon";
+import { TwitchIcon } from "./icons/TwitchIcon";
 
 interface LoginModalProps {
     dialogRef: React.RefObject<HTMLDialogElement>;
@@ -72,6 +73,21 @@ export default function LoginModal({ dialogRef, supabase }: LoginModalProps) {
         }
     }
 
+    async function signInWithTwitch() {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: "twitch",
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback`,
+            },
+        });
+
+        if (error) {
+            setError(error.message);
+        } else if (data.url) {
+            window.location.href = data.url;
+        }
+    }
+
     const typing = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value)
         setError(null)
@@ -90,12 +106,16 @@ export default function LoginModal({ dialogRef, supabase }: LoginModalProps) {
                         <TwitterIcon />
                         <span className="ml-2">Continue with Twitter</span>
                     </button>
-                    <label className="input input-bordered flex items-center gap-2">
+                    <button className="btn btn-block flex items-center justify-center" onClick={signInWithTwitch}>
+                        <TwitchIcon />
+                        <span className="ml-2">Continue with Twitch</span>
+                    </button>
+                    {/* <label className="input input-bordered flex items-center gap-2">
                         Email
                         <input type="email" className="grow" required={true} value={email} onChange={typing}
                             onKeyUp={(e) => e.key === "Enter" && signIn()} />
                     </label>
-                    <button type="button" className="btn btn-primary btn-block" onClick={signIn}>Sign In With Email</button>
+                    <button type="button" className="btn btn-primary btn-block" onClick={signIn}>Sign In With Email</button> */}
                     {error && <div role="alert" className="alert">
                         <CrossIcon />
                         <span>{error}</span>

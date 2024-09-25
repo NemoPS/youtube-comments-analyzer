@@ -12,7 +12,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
         if (!error && data.user) {
-            console.log("User authenticated:", data.user);
+            // console.log("User authenticated:", data.user);
 
             // Create user profile if it doesn't exist, otherwise retrieve it
             const { data: profileData, error: profileError } = await supabase
@@ -32,7 +32,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
                 console.error("Error creating/retrieving profile:", profileError);
                 // You might want to add some error handling here
             } else {
-                console.log("Profile created/retrieved:", profileData);
+
+                // console.log("Profile created/retrieved:", profileData);
             }
 
             // Force a reload of the user data
