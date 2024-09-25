@@ -373,15 +373,17 @@ export default function Dashboard() {
                                             <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
                                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                                 {isSearching && <DummySearchCard />}
-                                                {previousSearchesFetcher.data.previousSearches.map((search, index) => (
-                                                    <div
-                                                        key={search.id}
-                                                        className="opacity-0 animate-fade-in"
-                                                        style={{ animationDelay: `${index * 50}ms` }}
-                                                    >
-                                                        <PreviousSearchCard search={search} />
-                                                    </div>
-                                                ))}
+                                                {previousSearchesFetcher.data.previousSearches
+                                                    .slice(0, isSearching ? -1 : undefined)
+                                                    .map((search, index) => (
+                                                        <div
+                                                            key={search.id}
+                                                            className="opacity-0 animate-fade-in"
+                                                            style={{ animationDelay: `${index * 50}ms` }}
+                                                        >
+                                                            <PreviousSearchCard search={search} />
+                                                        </div>
+                                                    ))}
                                             </div>
                                             {previousSearchesFetcher.data.totalPages > 1 && (
                                                 <div className="flex justify-center mt-4">
@@ -416,6 +418,15 @@ export default function Dashboard() {
         </TransitionWrapper>
     );
 }
+
+type FetcherData = {
+    painPoints?: Array<{ topic: string; description: string }>;
+    discussedTopics?: Array<{ topic: string; description: string }>;
+    error?: string;
+    videoTitle?: string;
+    videoUrl?: string;
+    thumbnailUrl?: string | null;
+};
 
 type FetcherData = {
     painPoints?: Array<{ topic: string; description: string }>;
