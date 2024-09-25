@@ -66,7 +66,7 @@ export default function Index() {
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="w-full md:w-1/2 space-y-4">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl lg:text-5xl">
-                  Stop <s className="text-error">guessing</s>. Start <span className="text-primary">knowing</span> what your audience craves.
+                  Stop <s className="text-error">guessing</s> . Start <span className="text-primary">knowing</span> what your audience craves.
                 </h1>
                 <p className="text-base-content/70 md:text-lg">
                   Tired of wasting time on videos that don't resonate? Our AI decodes your audience's desires in minutes, not days. While others struggle to connect, you'll be creating content that captivates, driving explosive channel growth.
@@ -90,7 +90,7 @@ export default function Index() {
             </div>
           </div>
         </section>
-        <section id="features" className="w-full py-12  bg-base-200/50 shadow-top-light">
+        <section className="w-full py-12  bg-base-200/50 shadow-top-light">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
               <div className="flex flex-col items-center space-y-4">
@@ -125,6 +125,48 @@ export default function Index() {
                   address evolving pain points in your content strategy.
                 </p>
               </div>
+            </div>
+          </div>
+        </section>
+        <section id="features" className="w-full py-12 md:py-24 bg-base-100">
+          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
+            <div className="flex flex-col items-center justify-center space-y-6 text-center">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Discover What TubeVoice Can Do for You</h2>
+              <p className="max-w-[900px] text-base-content/70 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                TubeVoice is your AI-powered YouTube comment analyzer. Here's what our platform offers:
+              </p>
+              <ul className="text-left text-base-content/70 md:text-lg space-y-4 max-w-[800px]">
+                <li className="flex items-start">
+                  <svg className="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span><strong>YouTube Comment Analysis:</strong> Input a YouTube video URL, and our AI will analyze the comments to provide valuable insights.</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span><strong>Pain Point Identification:</strong> We identify the top 3 pain points expressed in the comments, helping you understand your audience's concerns.</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span><strong>Topic Analysis:</strong> Discover the top 5 most discussed topics in your video's comments.</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span><strong>Credit-Based System:</strong> Use credits to analyze videos, with different packages available to suit your needs.</span>
+                </li>
+              </ul>
+              <p className="max-w-[900px] text-base-content/70 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed mt-4">
+                TubeVoice helps you understand your audience better, allowing you to create more targeted and engaging content for your YouTube channel.
+              </p>
+              <Button variant="primary" className="mt-6">
+                <Link to="/dashboard">Start Analyzing Now</Link>
+              </Button>
             </div>
           </div>
         </section>
