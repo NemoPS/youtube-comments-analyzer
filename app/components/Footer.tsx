@@ -11,6 +11,14 @@ export default function Footer() {
                 <Link to="/privacy" className="text-xs hover:underline underline-offset-4">
                     Privacy Policy
                 </Link>
+                <a href="#"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = `mailto:${'support'}${'@'}${'tubevoice.com'}`;
+                    }}
+                    className="text-xs hover:underline underline-offset-4">
+                    Contact Support
+                </a>
             </nav>
         </footer>
     );
