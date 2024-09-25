@@ -1,11 +1,12 @@
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { useSearchParams, useNavigate } from "@remix-run/react";
 import { sb } from "~/api/sb";
 import { Button } from "~/components/Button";
 import { Card } from "~/components/Card";
 import { useEffect, useRef } from "react";
 import Footer from "~/components/Footer";
+import { toast } from "react-hot-toast";
 
 export const meta: MetaFunction = () => {
   return [
@@ -29,8 +30,43 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 }
 
 export default function Index() {
-  const { env, user, profile, avatarUrl } = useLoaderData<typeof loader>();
   const parallaxRef = useRef<HTMLDivElement>(null);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const hasShownToast = useRef(false);
+
+  useEffect(() => {
+    if (hasShownToast.current) return;
+
+    const showErrorToast = (errorDescription: string) => {
+      const decodedErrorDescription = decodeURIComponent(errorDescription.replace(/\+/g, " "));
+      toast.error(`Login Error: ${decodedErrorDescription}`, {
+        duration: 5000,
+        position: "top-center",
+      });
+      hasShownToast.current = true;
+    };
+
+    const searchError = searchParams.get("error");
+    const searchErrorDescription = searchParams.get("error_description");
+
+    if (searchError && searchErrorDescription) {
+      showErrorToast(searchErrorDescription);
+      // Remove error params from URL
+      navigate("/", { replace: true });
+    } else {
+      // Check hash params if search params don't have the error
+      const hashParams = new URLSearchParams(window.location.hash.slice(1));
+      const hashError = hashParams.get("error");
+      const hashErrorDescription = hashParams.get("error_description");
+
+      if (hashError && hashErrorDescription) {
+        showErrorToast(hashErrorDescription);
+        // Remove error params from hash
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    }
+  }, [searchParams, navigate]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,7 +110,7 @@ export default function Index() {
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="w-full md:w-1/2 space-y-4">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl lg:text-5xl">
-                  Stop <s className="text-error">guessing</s> . Start <span className="text-primary">knowing</span> what your audience craves.
+                  Stop <s className="text-error">guessing</s>   . Start <span className="text-primary">knowing</span> what your audience craves.
                 </h1>
                 <p className="text-base-content/70 md:text-lg">
                   Tired of wasting time on videos that don&apos;t resonate? Our AI decodes your audience&apos;s desires in minutes, not days. While others struggle to connect, you&apos;ll be creating content that captivates, driving explosive channel growth.
@@ -141,7 +177,7 @@ export default function Index() {
             <div className="flex flex-col items-center justify-center space-y-6 text-center">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Discover What TubeVoice Can Do for You</h2>
               <p className="max-w-[900px] text-base-content/70 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                TubeVoice is your AI-powered YouTube comment analyzer. Here's what our platform offers:
+                TubeVoice is your AI-powered YouTube comment analyzer. Here&apos;s what our platform offers:
               </p>
               <ul className="text-left text-base-content/70 md:text-lg space-y-4 max-w-[800px]">
                 <li className="flex items-start">
@@ -154,13 +190,13 @@ export default function Index() {
                   <svg className="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span><strong>Pain Point Identification:</strong> We identify the top 3 pain points expressed in the comments, helping you understand your audience's concerns.</span>
+                  <span><strong>Pain Point Identification:</strong> We identify the top 3 pain points expressed in the comments, helping you understand your audience&apos;s concerns.</span>
                 </li>
                 <li className="flex items-start">
                   <svg className="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span><strong>Topic Analysis:</strong> Discover the top 5 most discussed topics in your video's comments.</span>
+                  <span><strong>Topic Analysis:</strong> Discover the top 5 most discussed topics in your video&apos;s comments.</span>
                 </li>
                 <li className="flex items-start">
                   <svg className="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -196,7 +232,7 @@ export default function Index() {
                   <div className="space-y-2">
                     <div className="inline-block rounded-lg bg-base-200 px-3 py-1 text-sm">"Invaluable Insights"</div>
                     <h3 className="text-2xl font-bold">
-                      "The YouTubeComment Analyzer has been invaluable for understanding our audience's pain points and
+                      "The YouTubeComment Analyzer has been invaluable for understanding our audience&apos;s pain points and
                       improving our content to better address their needs."
                     </h3>
                     <p className="text-base-content/70">- John Doe, Content Creator</p>
