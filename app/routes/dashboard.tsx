@@ -281,10 +281,10 @@ export default function Dashboard() {
                     type: 'success'
                 });
                 // Reload previous searches
-                previousSearchesFetcher.load(`/dashboard/previous-searches?page=${currentPage}`);
+                previousSearchesFetcher.load(`/dashboard/previous-searches`);
             }
         }
-    }, [fetcher.state, fetcher.data, currentPage]);
+    }, [fetcher.state, fetcher.data]);
 
     useEffect(() => {
         const paymentSuccess = searchParams.get('paymentSuccess');
