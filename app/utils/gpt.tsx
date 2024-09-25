@@ -3,7 +3,7 @@ import OpenAI from "openai";
 export async function getFromGPT(comments: string) {
     const openai = new OpenAI();
     const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini", // Use the latest GPT-4 model
+        model: "gpt-4o-mini",
         messages: [
             {
                 role: "system",

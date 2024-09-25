@@ -373,32 +373,41 @@ export default function Dashboard() {
                                 </div>
                             ) : previousSearchesFetcher.data ? (
                                 <div className={`${isLoadingPreviousSearches ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
-                                    <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                        {isSearching && <DummySearchCard />}
-                                        {previousSearchesFetcher.data.previousSearches.map((search, index) => (
-                                            <div
-                                                key={search.id}
-                                                className="opacity-0 animate-fade-in"
-                                                style={{ animationDelay: `${index * 50}ms` }}
-                                            >
-                                                <PreviousSearchCard search={search} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                    {previousSearchesFetcher.data.totalPages > 1 && (
-                                        <div className="flex justify-center mt-4">
-                                            <div className="btn-group space-x-2">
-                                                {Array.from({ length: previousSearchesFetcher.data.totalPages }, (_, i) => i + 1).map((page) => (
-                                                    <button
-                                                        key={page}
-                                                        className={`btn ${page === currentPage ? 'btn-active' : ''}`}
-                                                        onClick={() => handlePageChange(page)}
+                                    {previousSearchesFetcher.data.previousSearches.length > 0 && (
+                                        <>
+                                            <h2 className="text-2xl font-bold mb-4">Previous Searches</h2>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                                {isSearching && <DummySearchCard />}
+                                                {previousSearchesFetcher.data.previousSearches.map((search, index) => (
+                                                    <div
+                                                        key={search.id}
+                                                        className="opacity-0 animate-fade-in"
+                                                        style={{ animationDelay: `${index * 50}ms` }}
                                                     >
-                                                        {page}
-                                                    </button>
+                                                        <PreviousSearchCard search={search} />
+                                                    </div>
                                                 ))}
                                             </div>
+                                            {previousSearchesFetcher.data.totalPages > 1 && (
+                                                <div className="flex justify-center mt-4">
+                                                    <div className="btn-group space-x-2">
+                                                        {Array.from({ length: previousSearchesFetcher.data.totalPages }, (_, i) => i + 1).map((page) => (
+                                                            <button
+                                                                key={page}
+                                                                className={`btn ${page === currentPage ? 'btn-active' : ''}`}
+                                                                onClick={() => handlePageChange(page)}
+                                                            >
+                                                                {page}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                    {previousSearchesFetcher.data.previousSearches.length === 0 && !isSearching && (
+                                        <div className="text-center text-base-content/70 mt-8">
+                                            No previous searches found. Start by analyzing a YouTube video above!
                                         </div>
                                     )}
                                 </div>
