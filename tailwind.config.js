@@ -4,6 +4,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Gabarito', 'sans-serif'],
+      },
       colors: {
         primary: "#0EA5E9",    // sky-500
         "primary-hover": "#38BDF8",    // sky-400 (lighter)

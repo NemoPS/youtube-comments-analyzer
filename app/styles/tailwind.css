@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotateX(10deg) rotateY(-10deg);
+  }
+  50% {
+    transform: translateY(-10px) rotateX(10deg) rotateY(-10deg);
+  }
+}
+
+@layer utilities {
+  .perspective {
+    perspective: 1000px;
+  }
+
+  .perspective-image {
+    transform: rotateX(10deg) rotateY(-10deg);
+    transition: transform 0.3s ease;
+  }
+
+  .perspective-image:hover {
+    transform: rotateX(0deg) rotateY(0deg) scale(1.05);
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+}

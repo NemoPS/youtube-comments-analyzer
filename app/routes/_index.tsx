@@ -7,6 +7,7 @@ import { Card } from "~/components/Card";
 import { useEffect, useRef } from "react";
 import Footer from "~/components/Footer";
 import { toast } from "react-hot-toast";
+import HeroImage from '~/components/HeroImage';
 
 export const meta: MetaFunction = () => {
   return [
@@ -105,12 +106,12 @@ export default function Index() {
         }}
       ></div>
       <main className="flex-1 relative z-10">
-        <section className="w-full py-8 md:py-12 lg:py-24">
-          <div className="container mx-auto px-4 md:px-6">
+        <section className="w-full py-8 md:py-12 lg:py-24 ">
+          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="w-full md:w-1/2 space-y-4">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl lg:text-5xl">
-                  Stop <s className="text-error">guessing</s>   . Start <span className="text-primary">knowing</span> what your audience craves.
+                <h1 className="text-white text-3xl font-normal tracking-tight sm:text-4xl lg:text-5xl">
+                  Stop <span className="font-bold tracking-normal">guessing</span>. <span className="text-error italic tracking-normal font-extrabold">Know</span> what your audience craves.
                 </h1>
                 <p className="text-base-content/70 md:text-lg">
                   Tired of wasting time on videos that don&apos;t resonate? Our AI decodes your audience&apos;s desires in minutes, not days. While others struggle to connect, you&apos;ll be creating content that captivates, driving explosive channel growth.
@@ -124,13 +125,7 @@ export default function Index() {
                   </Button>
                 </div>
               </div>
-              <div className="w-full md:w-1/2">
-                <img
-                  src="/placeholder.svg"
-                  alt="Hero"
-                  className="w-full max-w-md mx-auto aspect-video md:aspect-square rounded-xl object-cover"
-                />
-              </div>
+              <HeroImage />
             </div>
           </div>
         </section>
@@ -230,10 +225,10 @@ export default function Index() {
               <Card >
                 <div className="flex flex-col justify-center space-y-4">
                   <div className="space-y-2">
-                    <div className="inline-block rounded-lg bg-base-200 px-3 py-1 text-sm">"Invaluable Insights"</div>
+                    <div className="inline-block rounded-lg bg-base-200 px-3 py-1 text-sm">'Invaluable Insights'</div>
                     <h3 className="text-2xl font-bold">
-                      "The YouTubeComment Analyzer has been invaluable for understanding our audience&apos;s pain points and
-                      improving our content to better address their needs."
+                      'The YouTubeComment Analyzer has been invaluable for understanding our audience&apos;s pain points and
+                      improving our content to better address their needs.'
                     </h3>
                     <p className="text-base-content/70">- John Doe, Content Creator</p>
                   </div>
@@ -242,10 +237,10 @@ export default function Index() {
               <Card >
                 <div className="flex flex-col justify-center space-y-4">
                   <div className="space-y-2">
-                    <div className="inline-block rounded-lg bg-base-200 px-3 py-1 text-sm">"Streamlined Moderation"</div>
+                    <div className="inline-block rounded-lg bg-base-200 px-3 py-1 text-sm">'Streamlined Moderation'</div>
                     <h3 className="text-2xl font-bold">
-                      "The comment moderation tools have saved us so much time and helped us maintain a positive
-                      community by addressing the pain points expressed in the comments."
+                      'The comment moderation tools have saved us so much time and helped us maintain a positive
+                      community by addressing the pain points expressed in the comments.'
                     </h3>
                     <p className="text-base-content/70">- Jane Smith, Brand Manager</p>
                   </div>

@@ -20,6 +20,12 @@ import "./styles/custom-toast.css";
 import { LoadingIndicator } from "./components/LoadingIndicator";
 import { TransitionWrapper } from "./components/TransitionWrapper";
 
+export const links = () => [
+  { rel: "preconnect", href: "https://fonts.googleapis.com" },
+  { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+  { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700&display=swap" },
+];
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const env = {
     SUPABASE_URL: process.env.SUPABASE_URL ?? '',
