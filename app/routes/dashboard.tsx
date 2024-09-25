@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLoaderData, useNavigation, useFetcher, Outlet, useLocation } from "@remix-run/react";
+import { useLoaderData, useNavigation, useFetcher, Outlet, useLocation, Link } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
 import { sb } from "~/api/sb";
@@ -58,9 +58,22 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         headers.append("Set-Cookie", "flash=; Max-Age=0; Path=/");
     }
 
+    // Fetch user's credits
+    const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('credits')
+        .eq('id', user.id)
+        .single();
+
+    if (profileError) {
+        console.error("Error fetching user profile:", profileError);
+        return json({ error: "Failed to fetch user profile" }, { status: 500 });
+    }
+
     return json({
         flashMessage,
         user,
+        credits: profile.credits,
     }, { headers });
 };
 
@@ -195,7 +208,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Dashboard() {
-    const { flashMessage, user } = useLoaderData<typeof loader>();
+    const { flashMessage, user, credits } = useLoaderData<typeof loader>();
     const location = useLocation();
     const isMainDashboard = location.pathname === "/dashboard";
     const previousSearchesFetcher = useFetcher<{
@@ -310,37 +323,48 @@ export default function Dashboard() {
 
                 {isMainDashboard ? (
                     <>
-                        <fetcher.Form method="post" className="mb-8" onSubmit={handleSubmit}>
-                            <div className="flex flex-col gap-2">
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        name="youtubeUrl"
-                                        value={youtubeUrl}
-                                        onChange={handleUrlChange}
-                                        placeholder="Enter YouTube URL"
-                                        className={`input input-bordered flex-grow ${urlError ? 'input-error' : ''}`}
-                                        required
-                                        disabled={isSearching}
-                                    />
-                                    <button
-                                        type="submit"
-                                        className={`btn btn-primary ${isSearching ? 'btn-disabled' : ''}`}
-                                        disabled={isSearching || !!urlError}
-                                    >
-                                        {isSearching ? (
-                                            <>
-                                                <span className="loading loading-spinner"></span>
-                                                Searching...
-                                            </>
-                                        ) : (
-                                            'Search'
-                                        )}
-                                    </button>
+                        {credits > 0 ? (
+                            <fetcher.Form method="post" className="mb-8" onSubmit={handleSubmit}>
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            name="youtubeUrl"
+                                            value={youtubeUrl}
+                                            onChange={handleUrlChange}
+                                            placeholder="Enter YouTube URL"
+                                            className={`input input-bordered flex-grow ${urlError ? 'input-error' : ''}`}
+                                            required
+                                            disabled={isSearching}
+                                        />
+                                        <button
+                                            type="submit"
+                                            className={`btn btn-primary ${isSearching ? 'btn-disabled' : ''}`}
+                                            disabled={isSearching || !!urlError}
+                                        >
+                                            {isSearching ? (
+                                                <>
+                                                    <span className="loading loading-spinner"></span>
+                                                    Searching...
+                                                </>
+                                            ) : (
+                                                'Search'
+                                            )}
+                                        </button>
+                                    </div>
+                                    {urlError && <p className="text-error text-sm">{urlError}</p>}
                                 </div>
-                                {urlError && <p className="text-error text-sm">{urlError}</p>}
+                            </fetcher.Form>
+                        ) : (
+                            <div className="border border-yellow-400 border-l-4 p-4 mb-8 rounded-md shadow-sm">
+                                <div className="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <span>You have no credits left. Please <Link to="/buy-credits" className="text-blue-500 underline">purchase more credits</Link> to analyze videos.</span>
+                                </div>
                             </div>
-                        </fetcher.Form>
+                        )}
 
                         <div className="transition-opacity duration-300 ease-in-out">
                             {isLoadingPreviousSearches && !isSearching ? (
