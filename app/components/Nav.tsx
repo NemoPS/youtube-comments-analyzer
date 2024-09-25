@@ -1,6 +1,6 @@
 import { Link, useRevalidator, useLocation } from "@remix-run/react";
 import { createBrowserClient } from "@supabase/ssr";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import LoginModal from "./LoginModal";
 import { CircleStackIcon } from "@heroicons/react/24/outline"; // Import CircleStackIcon
 
@@ -29,6 +29,20 @@ export default function Nav({ env, user, profile, avatarUrl }: NavProps) {
     const revalidator = useRevalidator();
     const location = useLocation();
     const [popoverOpen, setPopoverOpen] = useState(false);
+    const popoverRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+                setPopoverOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     async function signOut() {
         const { error } = await supabase.auth.signOut();
@@ -75,7 +89,7 @@ export default function Nav({ env, user, profile, avatarUrl }: NavProps) {
                             Buy Credits
                         </Link>
                     )}
-                    <div className="relative">
+                    <div className="relative" ref={popoverRef}>
                         <div className="avatar cursor-pointer" onClick={togglePopover} tabIndex={0} role="button" aria-haspopup="true" aria-expanded={popoverOpen}>
                             {avatarUrl ? (
                                 <div className="w-10 rounded-full">
@@ -89,8 +103,8 @@ export default function Nav({ env, user, profile, avatarUrl }: NavProps) {
                                 </div>
                             )}
                         </div>
-                        <div className={`absolute right-0 mt-2 w-48 bg-base-200 border border-base-300 rounded-md shadow-lg z-10 transition ease-out duration-200 transform ${popoverOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}`}>
-                            <button className="block w-full text-left px-4 py-2 text-sm text-base-content rounded-md  hover:bg-base-300" onClick={signOut}>
+                        <div className={`absolute right-0 mt-2 w-48 bg-base-200 border border-base-300 rounded-md shadow-lg z-10 transition ease-out duration-200 transform ${popoverOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1 pointer-events-none'}`}>
+                            <button className="block w-full text-left px-4 py-2 text-sm text-base-content rounded-md hover:bg-base-300" onClick={signOut}>
                                 Sign Out
                             </button>
                         </div>

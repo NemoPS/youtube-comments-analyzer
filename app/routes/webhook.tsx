@@ -22,7 +22,7 @@ export const action: ActionFunction = async ({ request }) => {
         return json({ error: `Webhook Error: ${err instanceof Error ? err.message : 'Unknown error'}` }, { status: 400 });
     }
 
-    // console.log("Received event type:", event.type);
+    console.log("Received event type:", event.type);
 
     if (event.type === 'checkout.session.completed') {
         const checkoutSession = event.data.object as Stripe.Checkout.Session;
@@ -31,8 +31,8 @@ export const action: ActionFunction = async ({ request }) => {
         const credits = parseInt(checkoutSession.metadata?.credits || "0", 10);
         const userId = checkoutSession.client_reference_id;
 
-        // console.log("Credits to add:", credits);
-        // console.log("User ID:", userId);
+        console.log("Credits to add:", credits);
+        console.log("User ID:", userId);
 
         if (!userId) {
             console.error("User ID not found in session");
@@ -41,7 +41,7 @@ export const action: ActionFunction = async ({ request }) => {
 
         const supabase = sb(request, new Headers());
 
-        // console.log("Calling add_credits RPC function with:", { user_id: userId, amount: credits });
+        console.log("Calling add_credits RPC function with:", { user_id: userId, amount: credits });
         const { data, error } = await supabase.rpc('add_credits', {
             user_id: userId,
             amount: credits
@@ -52,7 +52,7 @@ export const action: ActionFunction = async ({ request }) => {
             return json({ error: "Error adding credits" }, { status: 500 });
         }
 
-        // console.log("Credits added successfully. Result:", data);
+        console.log("Credits added successfully. Result:", data);
 
         // Add this section to verify the credits were actually added
         const { data: updatedUser, error: fetchError } = await supabase

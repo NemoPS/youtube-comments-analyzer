@@ -64,14 +64,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const headers = new Headers();
     const supabase = sb(request, headers);
 
-    const [{ data: { user } }, { data: profile }] = await Promise.all([
-        supabase.auth.getUser(),
-        supabase.from("profiles").select("*").single()
-    ]);
+    const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
         return redirect("/", { headers });
     }
+
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
     // Use cached products or fetch if cache is expired
     const products = await getProducts();
@@ -85,7 +88,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function BuyCredits() {
-    const { profile, stripePublishableKey, products } = useLoaderData<LoaderData>();
+    const { user, profile, stripePublishableKey, products } = useLoaderData<LoaderData>();
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
     const navigation = useNavigation();
 
@@ -213,6 +216,7 @@ export default function BuyCredits() {
             </div>
             <div className="mt-8 text-center">
                 <p className="mb-4">Current Credits: {profile?.credits || 0}</p>
+                <p>Logged in as: {user?.email}</p>
             </div>
         </div>
     );
