@@ -29,6 +29,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 }
 
 export default function Index() {
+  const { env, user, profile, avatarUrl } = useLoaderData<typeof loader>();
   const parallaxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,6 +46,13 @@ export default function Index() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  const openLoginModal = () => {
+    const loginButton = document.querySelector('.btn.btn-sm[data-login-button]') as HTMLButtonElement | null;
+    if (loginButton) {
+      loginButton.click();
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden">
@@ -69,14 +77,14 @@ export default function Index() {
                   Stop <s className="text-error">guessing</s> . Start <span className="text-primary">knowing</span> what your audience craves.
                 </h1>
                 <p className="text-base-content/70 md:text-lg">
-                  Tired of wasting time on videos that don't resonate? Our AI decodes your audience's desires in minutes, not days. While others struggle to connect, you'll be creating content that captivates, driving explosive channel growth.
+                  Tired of wasting time on videos that don&apos;t resonate? Our AI decodes your audience&apos;s desires in minutes, not days. While others struggle to connect, you&apos;ll be creating content that captivates, driving explosive channel growth.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2">
-                  <Button variant="primary">
-                    <Link to="/dashboard">Get Started Now</Link>
+                  <Button variant="primary" onClick={openLoginModal}>
+                    Get Started Now
                   </Button>
                   <Button variant="secondary">
-                    <Link to="#features">Learn More</Link>
+                    <a href="#features">Learn More</a>
                   </Button>
                 </div>
               </div>
@@ -164,8 +172,8 @@ export default function Index() {
               <p className="max-w-[900px] text-base-content/70 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed mt-4">
                 TubeVoice helps you understand your audience better, allowing you to create more targeted and engaging content for your YouTube channel.
               </p>
-              <Button variant="primary" className="mt-6">
-                <Link to="/dashboard">Start Analyzing Now</Link>
+              <Button variant="primary" className="mt-6" onClick={openLoginModal}>
+                Start Analyzing Now
               </Button>
             </div>
           </div>

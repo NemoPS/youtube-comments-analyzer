@@ -97,7 +97,7 @@ export default function Nav({ env, user, profile, avatarUrl }: NavProps) {
                     </div>
                 </div>
             ) : (
-                <button className="btn btn-sm" onClick={openModal}>
+                <button className="btn btn-sm" onClick={openModal} data-login-button>
                     Sign In
                 </button>
             )}
