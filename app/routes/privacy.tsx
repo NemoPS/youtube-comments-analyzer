@@ -47,12 +47,12 @@ export default function PrivacyPolicy() {
 
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">7. Changes to This Policy</h2>
-                    <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+                    <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the &quot;Last Updated&quot; date.</p>
                 </section>
 
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">8. Contact Us</h2>
-                    <p>If you have any questions about this Privacy Policy or our data practices, please contact us at: privacy@tubevoice.com</p>
+                    <p>If you have any questions about this Privacy Policy or our data practices, please contact us at: support[at]tubevoice.com</p>
                 </section>
 
                 <p className="mb-4">Last Updated: {new Date().toLocaleDateString()}</p>

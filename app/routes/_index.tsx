@@ -61,19 +61,17 @@ export default function Index() {
         }}
       ></div>
       <main className="flex-1 relative z-10">
-        <section className="w-full py-12 md:py-24">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                    Stop <s className="text-error">guessing</s>. Start <span className="text-primary">knowing</span> what your audience craves.
-                  </h1>
-                  <p className="max-w-[600px] text-base-content/70 md:text-xl">
-                    Tired of wasting time on videos that don&apos;t resonate? Our AI decodes your audience&apos;s desires in minutes, not days. While others struggle to connect, you&apos;ll be creating content that captivates, driving explosive channel growth.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2 min-[400px]:flex-row">
+        <section className="w-full py-8 md:py-12 lg:py-24">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="w-full md:w-1/2 space-y-4">
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl lg:text-5xl">
+                  Stop <s className="text-error">guessing</s>. Start <span className="text-primary">knowing</span> what your audience craves.
+                </h1>
+                <p className="text-base-content/70 md:text-lg">
+                  Tired of wasting time on videos that don't resonate? Our AI decodes your audience's desires in minutes, not days. While others struggle to connect, you'll be creating content that captivates, driving explosive channel growth.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Button variant="primary">
                     <Link to="/dashboard">Get Started Now</Link>
                   </Button>
@@ -82,13 +80,13 @@ export default function Index() {
                   </Button>
                 </div>
               </div>
-              <img
-                src="/placeholder.svg"
-                alt="Hero"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last lg:aspect-square"
-                width="550"
-                height="550"
-              />
+              <div className="w-full md:w-1/2">
+                <img
+                  src="/placeholder.svg"
+                  alt="Hero"
+                  className="w-full max-w-md mx-auto aspect-video md:aspect-square rounded-xl object-cover"
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -148,7 +146,7 @@ export default function Index() {
                   <div className="space-y-2">
                     <div className="inline-block rounded-lg bg-base-200 px-3 py-1 text-sm">"Invaluable Insights"</div>
                     <h3 className="text-2xl font-bold">
-                      "The YouTube Comment Analyzer has been invaluable for understanding our audience's pain points and
+                      "The YouTubeComment Analyzer has been invaluable for understanding our audience's pain points and
                       improving our content to better address their needs."
                     </h3>
                     <p className="text-base-content/70">- John Doe, Content Creator</p>
