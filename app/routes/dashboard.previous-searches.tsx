@@ -14,7 +14,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") || "1", 10);
-    const pageSize = 8;
+    const pageSize = 20;
 
     const { data: previousSearches, error, count } = await supabase
         .from('youtube_searches')
