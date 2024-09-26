@@ -11,6 +11,9 @@ export default function Footer() {
                 <Link to="/privacy" className="text-xs hover:underline underline-offset-4">
                     Privacy Policy
                 </Link>
+                <Link to="/commerce-disclosure" className="text-xs hover:underline underline-offset-4">
+                    Commerce Disclosure
+                </Link>
                 <button
                     onClick={(e) => {
                         e.preventDefault();
