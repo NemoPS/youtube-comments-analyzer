@@ -15,6 +15,7 @@ function createYoutubeClient() {
 
 export async function loadComments(videoUrl: string) {
     const videoId = extractVideoId(videoUrl);
+    console.log('Extracted Video ID:', videoId); // Add this line for testing
     if (!videoId) {
         throw new Error('Invalid YouTube URL');
     }
@@ -66,6 +67,7 @@ export async function loadComments(videoUrl: string) {
 }
 
 function extractVideoId(url: string): string | null {
+    // Updated regex to handle various YouTube URL formats, including those with timestamps
     const regex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
     const match = url.match(regex);
     return match ? match[1] : null;
