@@ -16,7 +16,7 @@ export default function CommerceDisclosure() {
     return (
         <div className="flex flex-col min-h-screen">
             <main className="flex-1 container mx-auto px-4 py-8 max-w-4xl">
-                <h1 className="text-3xl font-bold mb-6">Commerce Disclosure</h1>
+                <h1 className="text-3xl font-bold mb-6">Specified Commercial Transaction Act</h1>
 
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
