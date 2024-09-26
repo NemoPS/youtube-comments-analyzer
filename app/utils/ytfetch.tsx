@@ -15,7 +15,7 @@ function createYoutubeClient() {
 
 export async function loadComments(videoUrl: string) {
     const videoId = extractVideoId(videoUrl);
-    console.log('Extracted Video ID:', videoId); // Add this line for testing
+    console.log('Extracted Video ID:', videoId); // Keep this line for debugging
     if (!videoId) {
         throw new Error('Invalid YouTube URL');
     }
@@ -58,7 +58,8 @@ export async function loadComments(videoUrl: string) {
         return {
             title: videoTitle,
             comments,
-            thumbnailUrl: videoResponse.data.items?.[0]?.snippet?.thumbnails?.standard?.url || null
+            thumbnailUrl: videoResponse.data.items?.[0]?.snippet?.thumbnails?.standard?.url || null,
+            videoId // Ensure this is always included
         };
     } catch (error) {
         console.error('Error fetching YouTube data:', error);
@@ -66,7 +67,7 @@ export async function loadComments(videoUrl: string) {
     }
 }
 
-function extractVideoId(url: string): string | null {
+export function extractVideoId(url: string): string | null {
     // Updated regex to handle various YouTube URL formats, including those with timestamps
     const regex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
     const match = url.match(regex);

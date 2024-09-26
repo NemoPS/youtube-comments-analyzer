@@ -11,6 +11,7 @@ import { Spinner } from "~/components/Spinner";
 import { Toaster } from 'react-hot-toast';
 import { showCustomToast } from '~/components/CustomToast';
 import { TransitionWrapper } from "~/components/TransitionWrapper";
+import { extractVideoId } from "~/utils/ytfetch";
 
 type User = {
     id: string;
@@ -29,7 +30,7 @@ function isValidUrl(string: string): boolean {
 }
 
 function isYoutubeUrl(url: string): boolean {
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11}$/;
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11}(\?si=[a-zA-Z0-9_-]+)?(&t=\d+s?)?$/;
     return youtubeRegex.test(url);
 }
 
@@ -109,13 +110,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         return json({ error: "Please enter a valid YouTube video URL" }, { status: 400 });
     }
 
+    const videoId = extractVideoId(youtubeUrl);
+    console.log("Extracted Video ID:", videoId); // Add this line for logging
+
+    if (!videoId) {
+        return json({ error: "Failed to extract video ID from the URL" }, { status: 400 });
+    }
+
     try {
-        // Check if the video URL has already been searched
+        // Check if the video ID has already been searched
         const { data: existingSearch, error: searchError } = await supabase
             .from('youtube_searches')
             .select('id')
             .eq('user_id', user.id)
-            .eq('video_url', youtubeUrl)
+            .eq('video_id', videoId)
             .single();
 
         if (searchError && searchError.code !== 'PGRST116') {
@@ -144,6 +152,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         }
 
         const { title, comments, thumbnailUrl } = await loadComments(youtubeUrl);
+        console.log("Loaded comments for video:", videoId); // Add this line for logging
+
         const { gpt, error } = await getFromGPT(comments.join("\n"));
 
         if (error) {
@@ -151,21 +161,25 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         }
 
         // Save the search data to the youtube_searches table
-        const { error: videoError } = await supabase
+        const { data: insertedData, error: videoError } = await supabase
             .from('youtube_searches')
             .insert({
                 user_id: user.id,
                 video_url: youtubeUrl,
+                video_id: videoId, // Ensure this is always included
                 video_title: title,
                 thumbnail_url: thumbnailUrl,
                 pain_points: gpt.painPoints,
                 discussed_topics: gpt.discussedTopics
-            });
+            })
+            .select();
 
         if (videoError) {
             console.error("Error saving search data:", videoError);
             return json({ error: "Failed to save search data" }, { status: 500 });
         }
+
+        console.log("Inserted data:", insertedData); // Add this line for debugging
 
         // Deduct one credit from the user's profile
         const { error: updateError } = await supabase.rpc('deduct_credits', {
@@ -187,7 +201,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         });
     } catch (error) {
         console.error("Error processing YouTube data:", error);
-        return json({ error: "Failed to process YouTube data" }, { status: 500 });
+        return json({ error: "Failed to process YouTube data. Please try again later." }, { status: 500 });
     }
 };
 
@@ -418,15 +432,6 @@ export default function Dashboard() {
         </TransitionWrapper>
     );
 }
-
-type FetcherData = {
-    painPoints?: Array<{ topic: string; description: string }>;
-    discussedTopics?: Array<{ topic: string; description: string }>;
-    error?: string;
-    videoTitle?: string;
-    videoUrl?: string;
-    thumbnailUrl?: string | null;
-};
 
 type FetcherData = {
     painPoints?: Array<{ topic: string; description: string }>;
