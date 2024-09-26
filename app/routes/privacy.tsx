@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 import { Link } from "@remix-run/react";
 import Footer from "~/components/Footer";
+import { useGoogleAnalytics } from '~/hooks/useGoogleAnalytics';
 
 export const meta: MetaFunction = () => {
     return [
@@ -10,6 +11,8 @@ export const meta: MetaFunction = () => {
 };
 
 export default function PrivacyPolicy() {
+    useGoogleAnalytics('/privacy');
+
     return (
         <div className="flex flex-col min-h-screen">
             <main className="flex-1 container mx-auto px-4 py-8 max-w-4xl">

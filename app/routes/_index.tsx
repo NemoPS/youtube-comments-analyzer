@@ -8,6 +8,7 @@ import { useEffect, useRef } from "react";
 import Footer from "~/components/Footer";
 import { toast } from "react-hot-toast";
 import HeroImage from '~/components/HeroImage';
+import { useGoogleAnalytics } from '~/hooks/useGoogleAnalytics';
 
 export const meta: MetaFunction = () => {
   return [
@@ -31,6 +32,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 }
 
 export default function Index() {
+  useGoogleAnalytics('/home');
+
   const parallaxRef = useRef<HTMLDivElement>(null);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
