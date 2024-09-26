@@ -19,6 +19,7 @@ import { Toaster } from 'react-hot-toast';
 import "./styles/custom-toast.css";
 import { LoadingIndicator } from "./components/LoadingIndicator";
 import { TransitionWrapper } from "./components/TransitionWrapper";
+import Purchases from "./routes/purchases";
 
 export const links = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -126,4 +127,11 @@ export function ErrorBoundary() {
     </html>
   );
 }
+
+export const routes: RouteObject[] = [
+  {
+    path: "/purchases",
+    element: <Purchases />,
+  },
+];
 

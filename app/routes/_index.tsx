@@ -114,7 +114,7 @@ export default function Index() {
                   Stop <span className="font-bold tracking-normal">guessing</span>. <span className="text-error italic tracking-normal font-extrabold">Know</span> what your audience craves.
                 </h1>
                 <p className="text-base-content/70 md:text-lg">
-                  Tired of wasting time on videos that don&apos;t resonate? Our AI decodes your audience&apos;s desires in minutes, not days. While others struggle to connect, you&apos;ll be creating content that captivates, driving explosive channel growth.
+                  The time you waste on market research could be used to make new videos! Our AI decodes your audience&apos;s desires in minutes, not days. While others struggle to connect, you&apos;ll be creating content that captivates, driving explosive channel growth.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Button variant="primary" onClick={openLoginModal}>

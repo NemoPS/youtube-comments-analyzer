@@ -104,6 +104,9 @@ export default function Nav({ env, user, profile, avatarUrl }: NavProps) {
                             )}
                         </div>
                         <div className={`absolute right-0 mt-2 w-48 bg-base-200 border border-base-300 rounded-md shadow-lg z-10 transition ease-out duration-200 transform ${popoverOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1 pointer-events-none'}`}>
+                            <Link to="/purchases" className="block w-full text-left px-4 py-2 text-sm text-base-content rounded-md hover:bg-base-300">
+                                Purchase History
+                            </Link>
                             <button className="block w-full text-left px-4 py-2 text-sm text-base-content rounded-md hover:bg-base-300" onClick={signOut}>
                                 Sign Out
                             </button>
