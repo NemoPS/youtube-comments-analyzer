@@ -35,17 +35,17 @@ export default function CommerceDisclosure() {
 
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">4. Pricing and Payment</h2>
-                    <p>Our services are offered on a credit-based system. Users can purchase credits which can be used to analyze YouTube videos. Prices for credit packages are clearly displayed on our website and may be subject to change. All prices are in USD and include applicable taxes.</p>
+                    <p>Our services are offered on a credit-based system. Users can purchase credits which can be used to analyze YouTube videos. Prices for credit packages are 5 USD for 10 credits, 10 USD for 25 credits, 15 USD for 50 credits. All prices are in USD and include applicable taxes, and may be subject to change.</p>
                 </section>
 
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">5. Payment Processing</h2>
-                    <p>We use Stripe, a trusted third-party payment processor, to handle all financial transactions. When you make a purchase, you will be redirected to Stripe's secure payment page. We do not store your full credit card information on our servers.</p>
+                    <p>We use Stripe, a trusted third-party payment processor, to handle all financial transactions. When you make a purchase, you will be redirected to Stripe's secure payment page. Credits are given immediately after purchasing. We do not store your full credit card information on our servers.</p>
                 </section>
 
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">6. Refund Policy</h2>
-                    <p>Due to the nature of our digital services, all sales are final and we do not offer refunds for purchased credits. However, if you experience technical issues that prevent you from using our service, please contact our support team, and we will work to resolve the issue or provide appropriate compensation.</p>
+                    <p>Due to the nature of our digital services, all sales are final. However, if you placed your order by mistake, we can refund the full amount within a shiort period of time. Also notice any purchased credit will be removed.</p>
                 </section>
 
                 <section className="mb-8">
@@ -57,6 +57,11 @@ export default function CommerceDisclosure() {
                     <h2 className="text-2xl font-semibold mb-4">8. Updates to This Disclosure</h2>
                     <p>We may update this Commerce Disclosure from time to time to reflect changes in our business practices or legal requirements. We will notify users of any significant changes by posting a notice on our website.</p>
                 </section>
+
+                <p>Chief operations officer: Fabio Porta</p>
+                <p>Additional Fees: None</p>
+                <p>Accepted payment methods: credit card</p>
+
 
                 <p className="mb-4">Last Updated: {new Date().toLocaleDateString()}</p>
 
