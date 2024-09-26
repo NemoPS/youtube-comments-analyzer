@@ -25,7 +25,9 @@ export default function CommerceDisclosure() {
 
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">2. Company Information</h2>
-                    <p>Available On Request</p>
+                    <p>Chief operations officer: Fabio Porta</p>
+                    <p>Address: We will disclose without delay if requested</p>
+                    <p>Phone Number: We will disclose without delay if requested</p>
                 </section>
 
                 <section className="mb-8">
@@ -41,6 +43,9 @@ export default function CommerceDisclosure() {
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">5. Payment Processing</h2>
                     <p>We use Stripe, a trusted third-party payment processor, to handle all financial transactions. When you make a purchase, you will be redirected to Stripe's secure payment page. Credits are given immediately after purchasing. We do not store your full credit card information on our servers.</p>
+                    <p>Additional Fees: None</p>
+                    <p>Accepted payment methods: credit card</p>
+                    <p>Delivery Times: immediate after purchase</p>
                 </section>
 
                 <section className="mb-8">
@@ -58,9 +63,8 @@ export default function CommerceDisclosure() {
                     <p>We may update this Commerce Disclosure from time to time to reflect changes in our business practices or legal requirements. We will notify users of any significant changes by posting a notice on our website.</p>
                 </section>
 
-                <p>Chief operations officer: Fabio Porta</p>
-                <p>Additional Fees: None</p>
-                <p>Accepted payment methods: credit card</p>
+
+
 
 
                 <p className="mb-4">Last Updated: {new Date().toLocaleDateString()}</p>
