@@ -7,6 +7,7 @@ type Purchase = {
     created_at: string;
     credits_purchased: number;
     amount: number;
+    status: string;
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -21,7 +22,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
     const { data: purchases, error } = await supabase
         .from('processed_payments')
-        .select('id, created_at, credits_purchased, amount')
+        .select('id, created_at, credits_purchased, amount, status')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -49,6 +50,7 @@ export default function Purchases() {
                                 <th>Date</th>
                                 <th>Credits Purchased</th>
                                 <th>Amount</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -57,6 +59,7 @@ export default function Purchases() {
                                     <td>{new Date(purchase.created_at).toLocaleDateString()}</td>
                                     <td>{purchase.credits_purchased}</td>
                                     <td>${purchase.amount.toFixed(2)}</td>
+                                    <td>{purchase.status}</td>
                                 </tr>
                             ))}
                         </tbody>
