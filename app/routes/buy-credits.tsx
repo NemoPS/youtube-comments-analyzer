@@ -37,7 +37,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET!, {
 // Cache the products for 1 hour
 let cachedProducts: Product[] | null = null;
 let lastFetchTime = 0;
-const CACHE_DURATION = 3600000; // 1 hour in milliseconds
+const CACHE_DURATION = 0; // 1 hour in milliseconds
 
 async function getProducts() {
     const currentTime = Date.now();
