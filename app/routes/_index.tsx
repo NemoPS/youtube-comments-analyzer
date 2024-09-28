@@ -109,19 +109,7 @@ export default function Index() {
         }}
       ></div>
       <main className="flex-1 relative z-10">
-        <section className="w-full py-4 md:py-6">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl flex justify-center">
-            <a href="https://www.producthunt.com/posts/tubevoice?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-tubevoice" target="_blank">
-              <img
-                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=492755&theme=light"
-                alt="TubeVoice - KNOW what your potential Youtube audience craves | Product Hunt"
-                style={{ width: '250px', height: '54px' }}
-                width="250"
-                height="54"
-              />
-            </a>
-          </div>
-        </section>
+
         <section className="w-full py-8 md:py-12 lg:py-24 ">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <div className="flex flex-col md:flex-row items-center gap-8">
