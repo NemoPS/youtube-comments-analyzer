@@ -55,7 +55,7 @@ export default function CommerceDisclosure() {
 
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">7. Customer Support</h2>
-                    <p>If you have any questions about our services, pricing, or this disclosure, please contact our customer support team at support@tubevoice.com. We aim to respond to all inquiries within 24 hours during business days.</p>
+                    <p>If you have any questions about our services, pricing, or this disclosure, please contact our customer support team at support@nemops.com. We aim to respond to all inquiries within 24 hours during business days.</p>
                 </section>
 
                 <section className="mb-8">

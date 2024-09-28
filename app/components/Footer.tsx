@@ -17,7 +17,7 @@ export default function Footer() {
                 <button
                     onClick={(e) => {
                         e.preventDefault();
-                        window.location.href = `mailto:${'support'}${'@'}${'tubevoice.com'}`;
+                        window.location.href = `mailto:${'support'}${'@'}${'nemops.com'}`;
                     }}
                     className="text-xs hover:underline underline-offset-4">
                     Contact Support
