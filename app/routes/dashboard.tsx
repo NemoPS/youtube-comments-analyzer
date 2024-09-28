@@ -30,7 +30,7 @@ function isValidUrl(string: string): boolean {
 }
 
 function isYoutubeUrl(url: string): boolean {
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11}(\?si=[a-zA-Z0-9_-]+)?(&t=\d+s?)?$/;
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11}(\?si=[a-zA-Z0-9_-]+)?(&t=\d+s?)?(&list=[a-zA-Z0-9_-]+)?(&index=\d+)?$/;
     return youtubeRegex.test(url);
 }
 
