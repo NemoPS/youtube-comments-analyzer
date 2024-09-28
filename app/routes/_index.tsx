@@ -168,7 +168,7 @@ export default function Index() {
         <section id="features" className="w-full py-12 md:py-24 bg-base-100">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <div className="flex flex-col items-center justify-center space-y-6 text-center">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Discover What TubeVoice Can Do for You</h2>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">LESS TIME spent researching = MORE TIME making videos</h2>
               <p className="max-w-[900px] text-base-content/70 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                 TubeVoice is your AI-powered YouTube comment analyzer. Here&apos;s what our platform offers:
               </p>
