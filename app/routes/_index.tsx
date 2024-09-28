@@ -152,16 +152,16 @@ export default function Index() {
                 <svg className="h-12 w-12 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                <h3 className="text-2xl font-bold text-center">Pain Point Identification</h3>
+                <h3 className="text-2xl font-bold text-center">Learn what people hate</h3>
                 <p className="text-base-content/70 text-center">
-                  Uncover the top 3 pain points expressed in your YouTube video comments. Gain valuable insights into your audience's concerns and frustrations to improve your content strategy.
+                  Uncover the top 3 struggles and complaints expressed in your YouTube video comments. Gain valuable insights into your audience's concerns and frustrations to improve your content strategy.
                 </p>
               </div>
               <div className="flex flex-col items-center space-y-4">
                 <svg className="h-12 w-12 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
                 </svg>
-                <h3 className="text-2xl font-bold text-center">Topic Analysis</h3>
+                <h3 className="text-2xl font-bold text-center">What people talk about</h3>
                 <p className="text-base-content/70 text-center">
                   Discover the top 5 most discussed topics in your YouTube video comments. Understand what resonates with your audience and tailor your content to their interests.
                 </p>
