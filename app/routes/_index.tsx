@@ -117,11 +117,11 @@ export default function Index() {
                   Stop <span className="font-bold tracking-normal">guessing</span>. <span className="text-error italic tracking-normal font-extrabold">Know</span> what your audience craves.
                 </h1>
                 <p className="text-base-content/70 md:text-lg">
-                  The time you waste on market research could be used to make new videos! Our AI decodes your audience&apos;s desires in minutes, not days. While others struggle to connect, you&apos;ll be creating content that captivates, driving explosive channel growth.
+                  The time you waste on market research could be used to make new videos! Our AI decodes your audience's desires in minutes, not days. While others struggle to connect, you&apos;ll be creating content that captivates, driving explosive channel growth.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Button variant="primary" onClick={openLoginModal}>
-                    Get Started Now
+                    Get Started For FREE Now
                   </Button>
                   <Button variant="secondary">
                     <a href="#features">Learn More</a>
@@ -204,46 +204,107 @@ export default function Index() {
               <Button variant="primary" className="mt-6" onClick={openLoginModal}>
                 Start Analyzing Now
               </Button>
+              <small>You will get 2 FREE CREDITS, valid for 2 searches, as you sign up 🙂</small>
             </div>
           </div>
         </section>
-        <section className="w-full py-12 md:py-24 lg:py-32">
+
+        {/* New Pricing Section */}
+        <section className="w-full py-12 md:py-24" id="pricing">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-base-200 px-3 py-1 text-sm">Customer Testimonials (dummy for Beta)</div>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">What Our Customers Say</h2>
-                <p className="max-w-[900px] text-base-content/70 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Hear from the creators and brands who have used our YouTube comment analysis tools to better
-                  understand their audience, address their pain points, and improve their content.
-                </p>
-              </div>
+            <div className="text-center space-y-4 mb-10">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Pricing for Everyone</h2>
+              <p className="max-w-[900px] mx-auto text-base-content/70 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                Choose the perfect plan to unlock the power of AI-driven YouTube comment analysis. Whether you&apos;re just starting out or scaling up, we&apos;ve got you covered.
+              </p>
             </div>
-            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
-              <Card >
-                <div className="flex flex-col justify-center space-y-4">
-                  <div className="space-y-2">
-                    <div className="inline-block rounded-lg bg-base-200 px-3 py-1 text-sm">'Invaluable Insights'</div>
-                    <h3 className="text-2xl font-bold">
-                      'The YouTubeComment Analyzer has been invaluable for understanding our audience&apos;s pain points and
-                      improving our content to better address their needs.'
-                    </h3>
-                    <p className="text-base-content/70">- John Doe, Content Creator</p>
-                  </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+              <Card className="flex flex-col items-center text-center gap-4">
+                <div className="flex items-center justify-center w-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-12 h-12 text-primary"
+                  >
+                    <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path>
+                    <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path>
+                  </svg>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold">5 Credits</h3>
+                  <p className="text-3xl font-bold">$5</p>
+                  <p className="text-base-content/70">
+                    Perfect for casual users. Ideal for those just starting out or with occasional analysis needs. Get a taste of our powerful insights without a big commitment.
+                  </p>
                 </div>
               </Card>
-              <Card >
-                <div className="flex flex-col justify-center space-y-4">
-                  <div className="space-y-2">
-                    <div className="inline-block rounded-lg bg-base-200 px-3 py-1 text-sm">'Streamlined Moderation'</div>
-                    <h3 className="text-2xl font-bold">
-                      'The comment moderation tools have saved us so much time and helped us maintain a positive
-                      community by addressing the pain points expressed in the comments.'
-                    </h3>
-                    <p className="text-base-content/70">- Jane Smith, Brand Manager</p>
-                  </div>
+              <Card className="flex flex-col items-center text-center gap-4">
+                <div className="flex items-center justify-center w-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-12 h-12 text-primary"
+                  >
+                    <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z"></path>
+                    <path d="M2 9v1c0 1.1.9 2 2 2h1"></path>
+                    <path d="M16 11h0"></path>
+                  </svg>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold">25 Credits</h3>
+                  <p className="text-3xl font-bold">$10</p>
+                  <p className="text-base-content/70">
+                    Great for power users and small teams. Dive deeper into your content analysis with more credits. Unlock the full potential of our platform for regular use.
+                  </p>
                 </div>
               </Card>
+              <Card className="flex flex-col items-center text-center gap-4">
+                <div className="flex items-center justify-center w-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-12 h-12 text-primary"
+                  >
+                    <path d="M6 3h12l4 6-10 13L2 9Z"></path>
+                    <path d="M11 3 8 9l4 13 4-13-3-6"></path>
+                    <path d="M2 9h20"></path>
+                  </svg>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold">50 Credits</h3>
+                  <p className="text-3xl font-bold">$15</p>
+                  <p className="text-base-content/70">
+                    Designed for pros and large teams with high-volume needs. Maximize your insights with our most comprehensive package and next-level your channel.
+                  </p>
+                </div>
+              </Card>
+            </div>
+            <div className="text-center">
+              <Button variant="primary" size="lg" className="px-8 py-3 text-lg" onClick={openLoginModal}>
+                Try Now for Free
+              </Button>
+              <p><small>1 credit = 1 search. 2 FREE CREDITS on sign up</small></p>
             </div>
           </div>
         </section>

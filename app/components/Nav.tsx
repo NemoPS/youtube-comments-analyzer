@@ -114,9 +114,13 @@ export default function Nav({ env, user, profile, avatarUrl }: NavProps) {
                     </div>
                 </div>
             ) : (
-                <button className="btn btn-sm" onClick={openModal} data-login-button>
-                    Sign In / Sign Up
-                </button>
+                <>
+                    <a href="#pricing" className="mr-4">Pricing</a>
+                    <button className="btn btn-sm" onClick={openModal} data-login-button>
+                        Sign In / Sign Up
+                    </button>
+                </>
+
             )}
             <LoginModal dialogRef={dialogRef} supabase={supabase} />
         </div>

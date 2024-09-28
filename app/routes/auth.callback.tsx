@@ -21,7 +21,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
                     id: data.user.id,
                     username: data.user.user_metadata.full_name || data.user.email,
                     avatar_url: data.user.user_metadata.avatar_url,
-                    credits: 0, // Set initial credits only for new users
+                    credits: 2, // Set initial credits only for new users
                 }, {
                     onConflict: 'id',
                     ignoreDuplicates: true,
