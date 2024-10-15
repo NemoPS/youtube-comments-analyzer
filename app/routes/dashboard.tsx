@@ -424,6 +424,18 @@ export default function Dashboard() {
                                 </div>
                             ) : null}
                         </div>
+                        <footer className="mt-8 border-t border-base-300 pt-4">
+                            <div className="flex justify-center">
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        window.location.href = `mailto:${'support'}${'@'}${'tubevoice.app'}`;
+                                    }}
+                                    className="text-xs text-base-content/70 hover:underline underline-offset-4">
+                                    Contact Support
+                                </button>
+                            </div>
+                        </footer>
                     </>
                 ) : (
                     <Outlet />
