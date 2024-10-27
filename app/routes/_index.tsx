@@ -307,7 +307,7 @@ export default function Index() {
               </Button>
               <p><small>1 credit = 1 search. 2 FREE CREDITS on sign up</small></p>
             </div>
-            <div className="text-center mt-4">
+            <div className="text-center mt-20">
 
               <p className="text-base-content/70">
                 Find us on <a href="https://aitools.inc/tools/tube-voice" className="hover:underline underline-offset-4">AI Tools</a>
